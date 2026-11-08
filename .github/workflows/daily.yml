@@ -9,10 +9,11 @@
 #
 # Runs the DAGs every day through Airflow itself, with `airflow dags
 # test`, so there is no Airflow server to pay for: the loads, then the
-# build, on DuckDB. Once the AWS_REGION variable is set, the warehouse
-# and its docs are copied to the lake bucket through GitHub's OIDC
-# token; once DATABRICKS_CATALOG is set, the same loads and models run
-# there too. Whatever names an account (the role, the bucket, the
+# build, on DuckDB. Once the AWS_REGION variable is set, a run on main
+# copies the warehouse and its docs to the lake bucket through GitHub's
+# OIDC token, since the role trusts main only; once DATABRICKS_CATALOG
+# is set, the same loads and models run there too, from any branch run
+# by hand. Whatever names an account (the role, the bucket, the
 # workspace's host, the warehouse's path, the token) is a secret, so
 # this public repository's logs mask it; the two variables say only
 # which steps run.
@@ -72,7 +73,7 @@ jobs:
           retention-days: 30
 
       - name: Sign in to AWS as the CI role
-        if: vars.AWS_REGION != ''
+        if: vars.AWS_REGION != '' && github.ref == 'refs/heads/main'
         # yamllint disable-line rule:line-length
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd  # v6.3.0
         with:
@@ -81,7 +82,7 @@ jobs:
           mask-aws-account-id: true
 
       - name: Copy the warehouse and its docs to the lake, by date
-        if: vars.AWS_REGION != ''
+        if: vars.AWS_REGION != '' && github.ref == 'refs/heads/main'
         env:
           BUCKET: ${{ secrets.LAKE_BUCKET }}
         run: |
