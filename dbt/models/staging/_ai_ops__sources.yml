@@ -1,0 +1,50 @@
+########################################################################
+#                                                                      #
+#               dbt/models/staging/_ai_ops__sources.yml                #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# The raw tables `python -m pipelines load ai-ops` fills from the apps'
+# committed results at their pins. The rows' own contract is
+# pipelines/rows.py; freshness says when the daily load last ran.
+
+sources:
+  - name: ai_ops
+    description: >
+      Every run the three apps committed, read at pinned commits: their
+      cases, scores and calls, their traces, and the price list the calls
+      were costed at.
+    schema: raw_ai_ops
+    config:
+      loaded_at_field: loaded_at
+      freshness:
+        warn_after: {count: 36, period: hour}
+        error_after: {count: 72, period: hour}
+    tables:
+      - name: runs
+        description: One row per run file, with the commit and git blob it was read at.
+      - name: summaries
+        description: One row per number a run's own summary published.
+      - name: cases
+        description: One row per case of a run in the workbench's format.
+      - name: scores
+        description: One row per numeric score of a case; true and false are 1 and 0.
+      - name: case_tags
+        description: One row per tag of a case or scenario.
+      - name: scenarios
+        description: One row per scenario of an intake run, as the app scored it.
+      - name: agent_model_calls
+        description: One row per model call the intake agent recorded in a run file.
+      - name: agent_tool_calls
+        description: One row per tool call the intake agent recorded, without its arguments.
+      - name: spans
+        description: One row per span of a run's committed trace, without prompt or answer text.
+      - name: retrieval_scores
+        description: One row per measure of a question under one search mode.
+      - name: prices
+        description: One row per model per version of the workbench's price list.
+        config:
+          freshness: null

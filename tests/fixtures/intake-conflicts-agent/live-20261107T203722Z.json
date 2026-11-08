@@ -1,0 +1,366 @@
+{
+ "name": "live",
+ "model": "claude-sonnet-5-5",
+ "provider": "anthropic",
+ "prices_as_of": "2026-10-15",
+ "summary": {
+  "scenarios": 3,
+  "conflict_recall": 1.0,
+  "false_positive_rate": null,
+  "clean_flagged_for_review": null,
+  "escalation": null,
+  "verdict_accuracy": 1.0,
+  "agent_verdict_accuracy": 1.0,
+  "failure_handling": 1.0,
+  "parties_named": 1.0,
+  "opened_without_approval": 0,
+  "open_attempts": 0,
+  "median_seconds": 7.091,
+  "p95_seconds": 8.423,
+  "mean_cost_usd": 0.020541,
+  "total_cost_usd": 0.061624
+ },
+ "scenarios": [
+  {
+   "id": "s01",
+   "title": "The other side is a current client",
+   "category": "conflict",
+   "tags": [
+    "obvious"
+   ],
+   "outcome": "submitted",
+   "expected_outcome": "submitted",
+   "agent_recommendation": "conflict",
+   "checks_recommendation": "conflict",
+   "recommendation": "conflict",
+   "expected_recommendation": "conflict",
+   "planted": 1,
+   "found": 1,
+   "parties_expected": 2,
+   "parties_named": 2,
+   "warnings": 0,
+   "open_attempts": 0,
+   "opened_without_approval": false,
+   "handled": null,
+   "seconds": 7.091,
+   "cost_usd": 0.026718,
+   "input_tokens": 8779,
+   "output_tokens": 916,
+   "steps": 3,
+   "tool_calls": 4,
+   "run_id": "R-eae489a7b6"
+  },
+  {
+   "id": "s11",
+   "title": "A client named only as the owner of the company on the other side",
+   "category": "conflict",
+   "tags": [
+    "person"
+   ],
+   "outcome": "submitted",
+   "expected_outcome": "submitted",
+   "agent_recommendation": "conflict",
+   "checks_recommendation": "conflict",
+   "recommendation": "conflict",
+   "expected_recommendation": "conflict",
+   "planted": 1,
+   "found": 1,
+   "parties_expected": 3,
+   "parties_named": 3,
+   "warnings": 0,
+   "open_attempts": 0,
+   "opened_without_approval": false,
+   "handled": null,
+   "seconds": 8.423,
+   "cost_usd": 0.029418,
+   "input_tokens": 9064,
+   "output_tokens": 1129,
+   "steps": 3,
+   "tool_calls": 6,
+   "run_id": "R-68174b7f54"
+  },
+  {
+   "id": "s17",
+   "title": "Not an intake: an empty forward",
+   "category": "failure",
+   "tags": [
+    "malformed"
+   ],
+   "outcome": "no_draft",
+   "expected_outcome": "no_draft",
+   "agent_recommendation": null,
+   "checks_recommendation": null,
+   "recommendation": null,
+   "expected_recommendation": null,
+   "planted": 0,
+   "found": 0,
+   "parties_expected": 0,
+   "parties_named": 0,
+   "warnings": 0,
+   "open_attempts": 0,
+   "opened_without_approval": false,
+   "handled": true,
+   "seconds": 1.534,
+   "cost_usd": 0.005488,
+   "input_tokens": 2379,
+   "output_tokens": 73,
+   "steps": 1,
+   "tool_calls": 0,
+   "run_id": "R-9b5db625df"
+  }
+ ],
+ "traces": [
+  {
+   "id": "s01",
+   "detail": {
+    "run": {
+     "id": "R-eae489a7b6",
+     "requester": "eval:requester",
+     "requester_name": "Evaluation",
+     "started_at": "2026-11-07T20:35:10+00:00",
+     "finished_at": "2026-11-07T20:35:17+00:00",
+     "email_sha256": "055c4bb03aa36ee3149361a85a3cf1b514d7e84cde5473a7d8e2a248a0c6a7e0",
+     "email_chars": 538,
+     "model": "claude-sonnet-5-5",
+     "outcome": "submitted",
+     "reason": "sent to an approver",
+     "draft_id": "D-fa210a6a87",
+     "steps": 3,
+     "tool_calls": 4,
+     "input_tokens": 8779,
+     "output_tokens": 916,
+     "cost_usd": 0.026718,
+     "ms": 7083
+    },
+    "model_calls": [
+     {
+      "step": 1,
+      "input_tokens": 2554,
+      "output_tokens": 198,
+      "cost_usd": 0.007088,
+      "ms": 1802,
+      "stop_reason": "tool_use"
+     },
+     {
+      "step": 2,
+      "input_tokens": 2839,
+      "output_tokens": 520,
+      "cost_usd": 0.010878,
+      "ms": 3379,
+      "stop_reason": "tool_use"
+     },
+     {
+      "step": 3,
+      "input_tokens": 3386,
+      "output_tokens": 198,
+      "cost_usd": 0.008752,
+      "ms": 1871,
+      "stop_reason": "tool_use"
+     }
+    ],
+    "tool_calls": [
+     {
+      "seq": 1,
+      "step": 1,
+      "tool": "search_adverse_parties",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "d3fa5c80b8e0f59d27170623211412af202092934e8e7ff6fd8cab476d144f8b",
+      "ms": 3,
+      "at": "2026-11-07T20:35:12+00:00"
+     },
+     {
+      "seq": 2,
+      "step": 1,
+      "tool": "search_clients",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "f4cbf41a4529d28235fce1f77a5d6e28bf1fbaceaa1fb2329f7f48fecadd716d",
+      "ms": 3,
+      "at": "2026-11-07T20:35:12+00:00"
+     },
+     {
+      "seq": 3,
+      "step": 2,
+      "tool": "draft_matter",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "f8f684741b363c3c38fca49304d273e7901fac088c2635b3e9efe0ca1600f415",
+      "ms": 2,
+      "at": "2026-11-07T20:35:15+00:00"
+     },
+     {
+      "seq": 4,
+      "step": 3,
+      "tool": "request_approval",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "5115e95f53724c3616044db010a43302cdf4a2d0fd9f2ef6747bc1ca96f79ad7",
+      "ms": 3,
+      "at": "2026-11-07T20:35:17+00:00"
+     }
+    ]
+   },
+   "text": ""
+  },
+  {
+   "id": "s11",
+   "detail": {
+    "run": {
+     "id": "R-68174b7f54",
+     "requester": "eval:requester",
+     "requester_name": "Evaluation",
+     "started_at": "2026-11-07T20:36:21+00:00",
+     "finished_at": "2026-11-07T20:36:30+00:00",
+     "email_sha256": "682a9c32f1196b01d702a094cace1e572b17724f4e73d8038ae4bcb1ea49281b",
+     "email_chars": 374,
+     "model": "claude-sonnet-5-5",
+     "outcome": "submitted",
+     "reason": "sent to an approver",
+     "draft_id": "D-2f16a850ae",
+     "steps": 3,
+     "tool_calls": 6,
+     "input_tokens": 9064,
+     "output_tokens": 1129,
+     "cost_usd": 0.029418,
+     "ms": 8417
+    },
+    "model_calls": [
+     {
+      "step": 1,
+      "input_tokens": 2487,
+      "output_tokens": 364,
+      "cost_usd": 0.008614,
+      "ms": 2551,
+      "stop_reason": "tool_use"
+     },
+     {
+      "step": 2,
+      "input_tokens": 2976,
+      "output_tokens": 595,
+      "cost_usd": 0.011902,
+      "ms": 4264,
+      "stop_reason": "tool_use"
+     },
+     {
+      "step": 3,
+      "input_tokens": 3601,
+      "output_tokens": 170,
+      "cost_usd": 0.008902,
+      "ms": 1560,
+      "stop_reason": "tool_use"
+     }
+    ],
+    "tool_calls": [
+     {
+      "seq": 1,
+      "step": 1,
+      "tool": "search_adverse_parties",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "c1b4a77e3ce08fc998d3d144b2132bf54a151eb24d293dc619dc3c5e24157f41",
+      "ms": 2,
+      "at": "2026-11-07T20:36:24+00:00"
+     },
+     {
+      "seq": 2,
+      "step": 1,
+      "tool": "search_adverse_parties",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "3740cd687298668627b757f33e5908ae41dde8b81846661f146c00c3baffa630",
+      "ms": 2,
+      "at": "2026-11-07T20:36:24+00:00"
+     },
+     {
+      "seq": 3,
+      "step": 1,
+      "tool": "search_clients",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "9554c3090d0a025870e6404676526267fb757884b903e043bf4229798e4e3ae9",
+      "ms": 3,
+      "at": "2026-11-07T20:36:24+00:00"
+     },
+     {
+      "seq": 4,
+      "step": 1,
+      "tool": "search_clients",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "5e844a06845de733fc65fc289daade7714ba3db7d841f8893cfd8527f3aab713",
+      "ms": 3,
+      "at": "2026-11-07T20:36:24+00:00"
+     },
+     {
+      "seq": 5,
+      "step": 2,
+      "tool": "draft_matter",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "3bc673754e32f487feaf68f9451e824065a1038f9b079fd6b871826b1941519d",
+      "ms": 2,
+      "at": "2026-11-07T20:36:28+00:00"
+     },
+     {
+      "seq": 6,
+      "step": 3,
+      "tool": "request_approval",
+      "arguments": {},
+      "ok": true,
+      "error": "",
+      "result_sha256": "af17caad026a7aa40ed9b880ea1450ee1cebf6e059521db47011e3b1fdc469b1",
+      "ms": 3,
+      "at": "2026-11-07T20:36:30+00:00"
+     }
+    ]
+   },
+   "text": ""
+  },
+  {
+   "id": "s17",
+   "detail": {
+    "run": {
+     "id": "R-9b5db625df",
+     "requester": "eval:requester",
+     "requester_name": "Evaluation",
+     "started_at": "2026-11-07T20:36:57+00:00",
+     "finished_at": "2026-11-07T20:36:58+00:00",
+     "email_sha256": "c0c005725d74965e4aa01bcd803d3dd0ee154045e3d61156890f1e432cd02581",
+     "email_chars": 73,
+     "model": "claude-sonnet-5-5",
+     "outcome": "no_draft",
+     "reason": "This email isn't a request for new legal work. It's an empty forward with no client, no adverse parties, and no matter described. I didn't run any searches or save a draft. If the requester has an actual intake, they should resend it with the details.",
+     "draft_id": null,
+     "steps": 1,
+     "tool_calls": 0,
+     "input_tokens": 2379,
+     "output_tokens": 73,
+     "cost_usd": 0.005488,
+     "ms": 1529
+    },
+    "model_calls": [
+     {
+      "step": 1,
+      "input_tokens": 2379,
+      "output_tokens": 73,
+      "cost_usd": 0.005488,
+      "ms": 1526,
+      "stop_reason": "end_turn"
+     }
+    ],
+    "tool_calls": []
+   },
+   "text": ""
+  }
+ ]
+}

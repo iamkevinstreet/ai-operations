@@ -1,0 +1,65 @@
+########################################################################
+#                                                                      #
+#                          config/config.toml                          #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# Every setting the loaders, the build and the DAGs read, at its
+# default. No secrets: those go in config/.env.
+#
+# Each key's name is its section and key joined: [warehouse] path is
+# warehouse_path, and the environment variable WAREHOUSE_PATH overrides
+# it. A nested table is one setting: [ai_ops.apps] is ai_ops_apps. A
+# test keeps this file equal to the defaults in pipelines/config.py.
+
+[warehouse]
+destination = "duckdb"                    # duckdb (one file, here and in CI) | databricks
+path = "data/generated/warehouse.duckdb"  # the DuckDB file dlt loads and dbt builds in
+state = "data/generated/dlt"              # dlt's pipeline state: what each load did
+
+[dbt]
+project = "dbt"                           # the dbt project, whose profiles.yml it also holds
+target = "dev"                            # dev: DuckDB | prod: Databricks
+threads = 4                               # models dbt builds at once
+
+[github]
+api = "https://api.github.com"            # lists a commit's files
+raw = "https://raw.githubusercontent.com" # serves a file at a commit
+owner = "iamkevinstreet"                  # whose repositories the results come from
+timeout_s = 30.0                          # how long one request may take
+
+[ai_ops]
+dataset = "raw_ai_ops"                    # the schema the apps' results load into
+results = "data/evals/results"            # where each app commits its run files
+prices_repo = "utils"                     # the workbench, whose price list costed every call
+prices_path = "llm/kds/llm/pricing.json"
+# Every version of the price list, by the utils commit that holds it, so a
+# fresh warehouse rebuilds the price history; add a commit when prices change.
+prices_commits = ["97157184471beb28ed129eb52086c36f76ef3e55"]
+
+# Each app's results at one reviewed commit: a load is repeatable, and a new
+# run reaches the warehouse only when its pin moves. These are the Nov 7
+# publish commits; move each to its main commit once that is merged.
+[ai_ops.apps]
+grounded-qa = "c6f4659d186c114db0ae8c3262ba408b75b0024a"
+intake-conflicts-agent = "ff9f7c16dde24d6ecf0b706730d5a44fd9bc99dd"
+eeoc-charge-intake = "a42121a5256d5307dde1dd581a42f07f13b7f7bd"
+
+[eeoc_stats]
+dataset = "raw_eeoc_stats"                # the schema the EEOC's statistics load into
+# Charge receipts by basis, FY 1997 to FY 2025, as the EEOC published it in April 2026.
+url = "https://www.eeoc.gov/sites/default/files/2026-04/Table_E1a._Charge_Receipts_by_Basis_or_Statute_%28All_Statutes%29_FY_1997_-_FY_2025_0.xlsx"
+timeout_s = 60.0                          # how long the download may take
+
+[databricks]
+catalog = "kds"                           # the Unity Catalog catalog every schema lives in
+
+[files]
+encoding = "utf-8"                        # every file read or written
+
+[log]
+dir = "logs"                              # one YYYY-MM-DD.jsonl file per day
+level = "INFO"                            # DEBUG | INFO | WARNING | ERROR

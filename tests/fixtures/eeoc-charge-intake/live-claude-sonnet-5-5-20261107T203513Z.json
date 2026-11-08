@@ -1,0 +1,176 @@
+{
+ "name": "live-claude-sonnet-5-5",
+ "model": "claude-sonnet-5-5",
+ "provider": "anthropic",
+ "started_at": "2026-11-07T20:35:13+00:00",
+ "finished_at": "2026-11-07T20:38:18+00:00",
+ "prices_as_of": "2026-10-15",
+ "cases": 3,
+ "failures": 0,
+ "summary": {
+  "empty_precision": 1.0,
+  "empty_recall": 1.0,
+  "f_bases": 1.0,
+  "f_charge_number": 1.0,
+  "f_charging_party": 1.0,
+  "f_continuing_action": 1.0,
+  "f_earliest_date": 1.0,
+  "f_eeoc_office": 1.0,
+  "f_issues": 1.0,
+  "f_latest_date": 1.0,
+  "f_notice_date": 1.0,
+  "f_respondent": 1.0,
+  "false_abstentions": 0.0,
+  "field_accuracy": 1.0,
+  "guesses": 0.0,
+  "model_latency_ms": 4018.6667,
+  "raw_filled_fields": 10.0,
+  "unsupported_rate": 0.0,
+  "unsupported_removed": 0.0,
+  "latency_p50_ms": 3925.0,
+  "latency_p95_ms": 4332.0,
+  "cost_total_usd": 0.0353,
+  "cost_per_case_usd": 0.011777,
+  "failure_rate": 0.0
+ },
+ "results": [
+  {
+   "case_id": "charge-000",
+   "tags": [
+    "clean"
+   ],
+   "ok": true,
+   "scores": {
+    "field_accuracy": 1.0,
+    "raw_filled_fields": 10,
+    "unsupported_removed": 0,
+    "unsupported_rate": 0.0,
+    "false_abstentions": 0,
+    "guesses": 0,
+    "empty_precision": 1.0,
+    "empty_recall": 1.0,
+    "model_latency_ms": 4319,
+    "f_charge_number": 1,
+    "f_charging_party": 1,
+    "f_respondent": 1,
+    "f_eeoc_office": 1,
+    "f_bases": 1,
+    "f_issues": 1,
+    "f_earliest_date": 1,
+    "f_latest_date": 1,
+    "f_continuing_action": 1,
+    "f_notice_date": 1,
+    "values": {
+     "charge_number": "410-2026-10000",
+     "charging_party": "Reese Underwood",
+     "respondent": "Northgate Industries Corp.",
+     "eeoc_office": "Atlanta District Office",
+     "bases": [
+      "Color",
+      "Sex"
+     ],
+     "issues": [
+      "Discipline",
+      "Reasonable Accommodation"
+     ],
+     "earliest_date": "2025-12-25",
+     "latest_date": "2026-07-09",
+     "continuing_action": false,
+     "notice_date": "2026-09-23"
+    },
+    "gold": {
+     "charge_number": "410-2026-10000",
+     "charging_party": "Reese Underwood",
+     "respondent": "Northgate Industries Corp.",
+     "eeoc_office": "Atlanta District Office",
+     "bases": [
+      "Color",
+      "Sex"
+     ],
+     "issues": [
+      "Discipline",
+      "Reasonable Accommodation"
+     ],
+     "earliest_date": "2025-12-25",
+     "latest_date": "2026-07-09",
+     "continuing_action": false,
+     "notice_date": "2026-09-23"
+    },
+    "removed": []
+   },
+   "output": null,
+   "error": null,
+   "latency_ms": 4332,
+   "cost_usd": 0.011952,
+   "calls": 1
+  },
+  {
+   "case_id": "charge-001",
+   "tags": [
+    "clean"
+   ],
+   "ok": true,
+   "scores": {
+    "field_accuracy": 1.0,
+    "raw_filled_fields": 10,
+    "unsupported_removed": 0,
+    "unsupported_rate": 0.0,
+    "false_abstentions": 0,
+    "guesses": 0,
+    "empty_precision": 1.0,
+    "empty_recall": 1.0,
+    "model_latency_ms": 3917,
+    "f_charge_number": 1,
+    "f_charging_party": 1,
+    "f_respondent": 1,
+    "f_eeoc_office": 1,
+    "f_bases": 1,
+    "f_issues": 1,
+    "f_earliest_date": 1,
+    "f_latest_date": 1,
+    "f_continuing_action": 1,
+    "f_notice_date": 1,
+    "removed": []
+   },
+   "output": null,
+   "error": null,
+   "latency_ms": 3925,
+   "cost_usd": 0.011658,
+   "calls": 1
+  },
+  {
+   "case_id": "charge-002",
+   "tags": [
+    "clean"
+   ],
+   "ok": true,
+   "scores": {
+    "field_accuracy": 1.0,
+    "raw_filled_fields": 10,
+    "unsupported_removed": 0,
+    "unsupported_rate": 0.0,
+    "false_abstentions": 0,
+    "guesses": 0,
+    "empty_precision": 1.0,
+    "empty_recall": 1.0,
+    "model_latency_ms": 3820,
+    "f_charge_number": 1,
+    "f_charging_party": 1,
+    "f_respondent": 1,
+    "f_eeoc_office": 1,
+    "f_bases": 1,
+    "f_issues": 1,
+    "f_earliest_date": 1,
+    "f_latest_date": 1,
+    "f_continuing_action": 1,
+    "f_notice_date": 1,
+    "removed": []
+   },
+   "output": null,
+   "error": null,
+   "latency_ms": 3828,
+   "cost_usd": 0.01172,
+   "calls": 1
+  }
+ ]
+}

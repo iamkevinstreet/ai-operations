@@ -1,0 +1,355 @@
+########################################################################
+#                                                                      #
+#                dbt/models/ai_ops/_ai_ops__models.yml                 #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# The AI operations mart: what every evaluation run of the three apps
+# measured, cost and spent its time on. Every model's columns and types
+# are a contract dbt enforces when it builds the table.
+
+groups:
+  - name: ai_ops
+    owner:
+      name: Kevin Street
+      email: info@kevindstreet.com
+
+models:
+  - name: dim_apps
+    description: One row per app, with the metric its runs are judged by.
+    columns:
+      - {name: app, data_type: string, data_tests: [unique, not_null]}
+      - {name: title, data_type: string}
+      - {name: primary_metric, data_type: string, data_tests: [not_null]}
+      - {name: primary_metric_label, data_type: string}
+      - {name: repository_url, data_type: string}
+
+  - name: dim_model_prices
+    description: >
+      One row per model per version of the workbench's price list, type 2:
+      valid from its as-of date until the next version's.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [model, valid_from]
+    columns:
+      - {name: price_key, data_type: string, data_tests: [unique, not_null]}
+      - {name: model, data_type: string, data_tests: [not_null]}
+      - name: input_per_mtok
+        data_type: double
+        description: USD per million input tokens.
+        data_tests: [not_null]
+      - name: output_per_mtok
+        data_type: double
+        description: USD per million output tokens.
+        data_tests: [not_null]
+      - {name: valid_from, data_type: date, data_tests: [not_null]}
+      - {name: valid_to, data_type: date, description: Blank for the current version.}
+      - {name: is_current, data_type: boolean}
+      - name: source_commit
+        data_type: string
+        description: The utils commit the list was read at.
+
+  - name: dim_models
+    description: One row per model a run or a call used, with its current list prices.
+    columns:
+      - {name: model, data_type: string, data_tests: [unique, not_null]}
+      - {name: provider, data_type: string}
+      - {name: input_per_mtok, data_type: double}
+      - {name: output_per_mtok, data_type: double}
+
+  - name: fct_eval_runs
+    description: >
+      One row per evaluation run. Percentiles are nearest-rank, as the apps
+      publish them. primary_metric_value is the mean of the app's judged
+      metric over the cases that completed.
+    columns:
+      - {name: run_key, data_type: string, data_tests: [unique, not_null]}
+      - name: app
+        data_type: string
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('dim_apps'), field: app}
+      - {name: run_id, data_type: string, data_tests: [not_null]}
+      - {name: run_name, data_type: string}
+      - name: run_format
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments: {values: [kds, intake]}
+      - {name: model, data_type: string}
+      - {name: provider, data_type: string}
+      - {name: is_live, data_type: boolean, data_tests: [not_null]}
+      - {name: run_at, data_type: timestamp, data_tests: [not_null]}
+      - {name: started_at, data_type: timestamp}
+      - {name: finished_at, data_type: timestamp}
+      - {name: run_seconds, data_type: bigint}
+      - {name: cases, data_type: bigint, data_tests: [not_null]}
+      - name: failed_cases
+        data_type: bigint
+        description: Blank where the app's format reports no failures.
+      - {name: cost_usd, data_type: double}
+      - {name: cost_per_case_usd, data_type: double}
+      - {name: latency_p50_ms, data_type: bigint}
+      - {name: latency_p95_ms, data_type: bigint}
+      - {name: model_calls, data_type: bigint}
+      - name: input_tokens
+        data_type: bigint
+        description: Blank when the run recorded no call's tokens.
+      - {name: output_tokens, data_type: bigint}
+      - name: primary_metric_value
+        data_type: double
+        data_tests:
+          - between:
+              arguments: {min_value: 0, max_value: 1}
+      - {name: prices_as_of, data_type: date}
+      - {name: source_commit, data_type: string, data_tests: [not_null]}
+      - {name: run_file, data_type: string, data_tests: [not_null]}
+
+  - name: fct_eval_cases
+    description: One row per case of an evaluation run, with its tags and recorded tokens.
+    columns:
+      - {name: case_key, data_type: string, data_tests: [unique, not_null]}
+      - name: run_key
+        data_type: string
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('fct_eval_runs'), field: run_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: case_id, data_type: string, data_tests: [not_null]}
+      - {name: completed, data_type: boolean}
+      - {name: latency_ms, data_type: bigint}
+      - {name: cost_usd, data_type: double}
+      - {name: model_calls, data_type: bigint}
+      - {name: tool_calls, data_type: bigint}
+      - {name: recorded_calls, data_type: bigint}
+      - {name: input_tokens, data_type: bigint}
+      - {name: output_tokens, data_type: bigint}
+      - {name: tags, data_type: string}
+
+  - name: fct_case_metrics
+    description: One row per metric of a case.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [case_key, metric]
+    columns:
+      - name: case_key
+        data_type: string
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('fct_eval_cases'), field: case_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: case_id, data_type: string}
+      - {name: metric, data_type: string, data_tests: [not_null]}
+      - {name: metric_value, data_type: double, data_tests: [not_null]}
+      - {name: completed, data_type: boolean}
+
+  - name: fct_run_metrics
+    description: >
+      One row per figure a run's summary published that the warehouse
+      rebuilds from case rows, beside the published value. The build fails
+      if any pair differs by more than the figure's rounding.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [run_key, published_metric]
+    columns:
+      - name: run_key
+        data_type: string
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('fct_eval_runs'), field: run_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: published_metric, data_type: string}
+      - {name: metric, data_type: string}
+      - {name: aggregate, data_type: string}
+      - {name: published_value, data_type: double}
+      - {name: warehouse_value, data_type: double, data_tests: [not_null]}
+      - {name: difference, data_type: double}
+      - {name: tolerance, data_type: double}
+      - name: matches
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments: {values: [true]}
+
+  - name: fct_model_calls
+    description: >
+      One row per model call, from the run's trace when it has one and from
+      the intake agent's run file otherwise. list_cost_usd prices the tokens
+      at the list valid on the run's date.
+    columns:
+      - {name: call_key, data_type: string, data_tests: [unique, not_null]}
+      - name: case_key
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: {to: ref('fct_eval_cases'), field: case_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: case_id, data_type: string, data_tests: [not_null]}
+      - name: call_source
+        data_type: string
+        data_tests:
+          - accepted_values:
+              arguments: {values: [trace, run_file]}
+      - {name: span_id, data_type: string}
+      - {name: step, data_type: bigint}
+      - name: model
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: {to: ref('dim_models'), field: model}
+      - {name: provider, data_type: string}
+      - {name: input_tokens, data_type: bigint, data_tests: [not_null]}
+      - {name: output_tokens, data_type: bigint, data_tests: [not_null]}
+      - {name: cost_usd, data_type: double}
+      - {name: list_cost_usd, data_type: double}
+      - {name: prices_as_of, data_type: date}
+      - {name: latency_ms, data_type: bigint}
+      - {name: finish_reason, data_type: string}
+      - {name: started_at, data_type: timestamp}
+
+  - name: fct_tool_calls
+    description: One row per tool call the intake agent made; its arguments are not loaded.
+    columns:
+      - {name: tool_call_key, data_type: string, data_tests: [unique, not_null]}
+      - name: case_key
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: {to: ref('fct_eval_cases'), field: case_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: case_id, data_type: string}
+      - {name: seq, data_type: bigint}
+      - {name: step, data_type: bigint}
+      - {name: tool_name, data_type: string, data_tests: [not_null]}
+      - {name: succeeded, data_type: boolean, data_tests: [not_null]}
+      - {name: error_message, data_type: string}
+      - {name: latency_ms, data_type: bigint}
+      - {name: called_at, data_type: timestamp}
+
+  - name: fct_spans
+    description: One row per span of a committed trace, with the case its trace belongs to.
+    columns:
+      - {name: span_key, data_type: string, data_tests: [unique, not_null]}
+      - name: case_key
+        data_type: string
+        data_tests:
+          - relationships:
+              arguments: {to: ref('fct_eval_cases'), field: case_key}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: case_id, data_type: string, data_tests: [not_null]}
+      - {name: trace_id, data_type: string, data_tests: [not_null]}
+      - {name: span_id, data_type: string}
+      - {name: parent_id, data_type: string}
+      - {name: span_name, data_type: string}
+      - {name: operation, data_type: string, data_tests: [not_null]}
+      - {name: span_kind, data_type: string}
+      - {name: started_at, data_type: timestamp}
+      - {name: ended_at, data_type: timestamp}
+      - name: duration_ms
+        data_type: double
+        data_tests:
+          - between:
+              arguments: {min_value: 0, max_value: 3600000}
+      - {name: status_code, data_type: string}
+      - {name: service_version, data_type: string}
+      - {name: request_model, data_type: string}
+      - {name: response_model, data_type: string}
+      - {name: input_tokens, data_type: bigint}
+      - {name: output_tokens, data_type: bigint}
+      - {name: cost_usd, data_type: double}
+      - {name: finish_reason, data_type: string}
+      - {name: error_type, data_type: string}
+      - {name: tool_name, data_type: string}
+      - {name: observation_type, data_type: string}
+
+  - name: fct_retrieval_scores
+    description: One row per measure of a question under one search mode in one retrieval run.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [run_key, retrieval_mode, case_id, metric]
+    columns:
+      - {name: run_key, data_type: string, data_tests: [not_null]}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: run_at, data_type: timestamp}
+      - {name: embedding_model, data_type: string}
+      - {name: retrieval_mode, data_type: string, data_tests: [not_null]}
+      - {name: case_id, data_type: string, data_tests: [not_null]}
+      - {name: metric, data_type: string, data_tests: [not_null]}
+      - name: metric_value
+        data_type: double
+        data_tests:
+          - between:
+              arguments: {min_value: 0, max_value: 1}
+
+  - name: rpt_cost_by_month
+    description: One row per month, app and model, over live runs only.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [month, app, model]
+    columns:
+      - {name: month, data_type: date}
+      - {name: app, data_type: string}
+      - {name: model, data_type: string}
+      - {name: runs, data_type: bigint}
+      - {name: cases, data_type: bigint}
+      - {name: cost_usd, data_type: double}
+      - {name: cost_per_case_usd, data_type: double}
+      - {name: input_tokens, data_type: bigint}
+      - {name: output_tokens, data_type: bigint}
+
+  - name: rpt_run_changes
+    description: >
+      One row per live run, beside the run before it of the same name: how
+      its judged metric, cost per case and median time moved.
+    columns:
+      - {name: run_key, data_type: string, data_tests: [unique, not_null]}
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: run_name, data_type: string}
+      - {name: run_at, data_type: timestamp}
+      - {name: cases, data_type: bigint}
+      - {name: primary_metric, data_type: string}
+      - {name: primary_metric_value, data_type: double}
+      - {name: previous_run_id, data_type: string, description: Blank for a name's first run.}
+      - {name: previous_metric_value, data_type: double}
+      - {name: metric_change, data_type: double}
+      - {name: cost_per_case_usd, data_type: double}
+      - {name: cost_per_case_change, data_type: double}
+      - {name: latency_p50_ms, data_type: bigint}
+      - {name: latency_p50_change_ms, data_type: bigint}
+
+  - name: rpt_latency_by_operation
+    description: One row per traced run and operation, such as retrieval, chat or execute_tool.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [app, run_id, operation]
+    columns:
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: operation, data_type: string}
+      - {name: spans, data_type: bigint}
+      - {name: total_ms, data_type: double}
+      - {name: mean_ms, data_type: double}
+      - {name: p50_ms, data_type: double}
+      - {name: p95_ms, data_type: double}

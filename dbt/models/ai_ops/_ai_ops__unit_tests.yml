@@ -1,0 +1,93 @@
+########################################################################
+#                                                                      #
+#              dbt/models/ai_ops/_ai_ops__unit_tests.yml               #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# Unit tests: the logic that window functions and format rules carry,
+# checked on a few hand-written rows before any real data is read.
+
+unit_tests:
+  - name: every_span_of_a_trace_takes_the_case_of_its_eval_span
+    description: Only the eval span names its case; its children take it from the trace.
+    model: int_ai_ops__spans
+    given:
+      - input: ref('stg_ai_ops__spans')
+        rows:
+          - {app: a, run_id: r, trace_id: t1, span_id: s1, eval_case: c1}
+          - {app: a, run_id: r, trace_id: t1, span_id: s2, eval_case: null}
+          - {app: a, run_id: r, trace_id: t2, span_id: s3, eval_case: c2}
+          - {app: a, run_id: r, trace_id: t2, span_id: s4, eval_case: null}
+    expect:
+      rows:
+        - {span_id: s1, case_id: c1}
+        - {span_id: s2, case_id: c1}
+        - {span_id: s3, case_id: c2}
+        - {span_id: s4, case_id: c2}
+
+  - name: a_price_version_ends_when_the_next_begins
+    description: Type 2 ranges from the as-of dates; the latest version stays open.
+    model: dim_model_prices
+    given:
+      - input: ref('stg_ai_ops__prices')
+        rows:
+          - {model: m, input_per_mtok: 3.0, output_per_mtok: 15.0, prices_as_of: "2026-01-01"}
+          - {model: m, input_per_mtok: 2.0, output_per_mtok: 10.0, prices_as_of: "2026-10-15"}
+    expect:
+      rows:
+        - {model: m, valid_from: "2026-01-01", valid_to: "2026-10-15", is_current: false}
+        - {model: m, valid_from: "2026-10-15", valid_to: null, is_current: true}
+
+  - name: a_run_is_compared_with_the_last_run_of_its_name
+    description: Each live run sits beside the one before it of the same name only.
+    model: rpt_run_changes
+    given:
+      - input: ref('fct_eval_runs')
+        rows:
+          - {app: a, run_id: k1, run_name: live-keyword, is_live: true,
+             run_at: "2026-10-01 00:00:00", primary_metric_value: 0.50, cost_per_case_usd: 0.010}
+          - {app: a, run_id: h1, run_name: live-hybrid, is_live: true,
+             run_at: "2026-10-02 00:00:00", primary_metric_value: 0.70, cost_per_case_usd: 0.020}
+          - {app: a, run_id: k2, run_name: live-keyword, is_live: true,
+             run_at: "2026-10-03 00:00:00", primary_metric_value: 0.75, cost_per_case_usd: 0.012}
+          - {app: a, run_id: o1, run_name: offline, is_live: false,
+             run_at: "2026-10-04 00:00:00", primary_metric_value: 1.00, cost_per_case_usd: 0.0}
+      - input: ref('dim_apps')
+        rows:
+          - {app: a, primary_metric: correct}
+    expect:
+      rows:
+        - {run_id: k1, previous_run_id: null, metric_change: null}
+        - {run_id: h1, previous_run_id: null, metric_change: null}
+        - {run_id: k2, previous_run_id: k1, metric_change: 0.25}
+
+  - name: the_intake_verdict_is_scored_only_where_one_was_expected
+    description: A scenario with no expected verdict has no verdict metric; a missing one is wrong.
+    model: int_ai_ops__case_metrics
+    given:
+      - input: ref('stg_ai_ops__scores')
+        rows: []
+      - input: ref('stg_ai_ops__cases')
+        rows: []
+      - input: ref('int_ai_ops__cases')
+        rows:
+          - {app: i, run_id: r, case_id: s1}
+          - {app: i, run_id: r, case_id: s2}
+          - {app: i, run_id: r, case_id: s3}
+      - input: ref('stg_ai_ops__scenarios')
+        rows:
+          - {app: i, run_id: r, case_id: s1, recommendation: conflict,
+             agent_recommendation: conflict, expected_recommendation: conflict}
+          - {app: i, run_id: r, case_id: s2, recommendation: null,
+             agent_recommendation: null, expected_recommendation: clear}
+          - {app: i, run_id: r, case_id: s3, recommendation: clear,
+             agent_recommendation: clear, expected_recommendation: null}
+    expect:
+      rows:
+        - {case_id: s1, metric: verdict_correct, metric_value: 1.0}
+        - {case_id: s1, metric: agent_verdict_correct, metric_value: 1.0}
+        - {case_id: s2, metric: verdict_correct, metric_value: 0.0}
+        - {case_id: s2, metric: agent_verdict_correct, metric_value: 0.0}

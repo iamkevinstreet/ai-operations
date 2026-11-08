@@ -1,0 +1,121 @@
+########################################################################
+#                                                                      #
+#                     .github/workflows/daily.yml                      #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# Runs the DAGs every day through Airflow itself, with `airflow dags
+# test`, so there is no Airflow server to pay for: the loads, then the
+# build, on DuckDB. When the repository's variables name an AWS role,
+# the warehouse and its docs are copied to the lake bucket through
+# GitHub's OIDC token; when they name a Databricks workspace, the same
+# loads and models run there too.
+
+name: daily
+
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  duckdb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write  # only for the AWS role, through GitHub's OIDC token
+    env:
+      RUNTIME__DLTHUB_TELEMETRY: "false"
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+        with:
+          version: "0.13.6"
+
+      - name: Install the locked environment with Airflow
+        run: uv sync --locked --group airflow
+
+      - name: Each DAG end to end through Airflow
+        run: make dags-test
+
+      - name: The docs site, with its lineage graph
+        run: make docs
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: warehouse-${{ github.run_id }}
+          path: |
+            data/generated/warehouse.duckdb
+            dbt/target/static_index.html
+          retention-days: 30
+
+      - name: Sign in to AWS as the CI role
+        if: vars.AWS_ROLE_ARN != ''
+        # yamllint disable-line rule:line-length
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd  # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Copy the warehouse and its docs to the lake, by date
+        if: vars.AWS_ROLE_ARN != ''
+        env:
+          BUCKET: ${{ vars.LAKE_BUCKET }}
+        run: |
+          day="$(date -u +%Y-%m-%d)"
+          aws s3 cp data/generated/warehouse.duckdb \
+            "s3://${BUCKET}/warehouse/${day}/warehouse.duckdb"
+          aws s3 cp dbt/target/static_index.html "s3://${BUCKET}/docs/${day}/index.html"
+
+  databricks:
+    if: vars.DATABRICKS_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUNTIME__DLTHUB_TELEMETRY: "false"
+      GITHUB_TOKEN: ${{ github.token }}
+      WAREHOUSE_DESTINATION: databricks
+      DBT_TARGET: prod
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
+        with:
+          version: "0.13.6"
+
+      - name: Install the locked environment with the Databricks adapters
+        run: uv sync --locked --group databricks
+
+      - name: Load every app's results into Databricks
+        run: make load
+
+      - name: Build and test every model on Databricks
+        run: make build

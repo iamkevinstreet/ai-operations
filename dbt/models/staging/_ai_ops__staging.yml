@@ -1,0 +1,84 @@
+########################################################################
+#                                                                      #
+#               dbt/models/staging/_ai_ops__staging.yml                #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# The staging views' grains, tested as early as they can be: a copy in
+# a raw table fails here, before any mart counts it twice.
+
+models:
+  - name: stg_ai_ops__runs
+    description: One row per run file an app committed, at its pinned commit.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id]}
+    columns:
+      - name: run_format
+        data_tests:
+          - accepted_values:
+              arguments: {values: [kds, intake, retrieval]}
+      - {name: source_commit, data_tests: [not_null]}
+
+  - name: stg_ai_ops__summaries
+    description: One row per number a run's summary published.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, published_metric]}
+
+  - name: stg_ai_ops__cases
+    description: One row per case of a run in the workbench's format.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id]}
+
+  - name: stg_ai_ops__scores
+    description: One row per numeric score of a case.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id, metric]}
+
+  - name: stg_ai_ops__case_tags
+    description: One row per tag of a case or scenario.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id, tag]}
+
+  - name: stg_ai_ops__scenarios
+    description: One row per scenario of an intake run.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id]}
+
+  - name: stg_ai_ops__agent_model_calls
+    description: One row per model call an intake scenario recorded.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id, step]}
+
+  - name: stg_ai_ops__agent_tool_calls
+    description: One row per tool call an intake scenario recorded.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, case_id, seq]}
+
+  - name: stg_ai_ops__spans
+    description: One row per span of a committed trace.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, span_id]}
+
+  - name: stg_ai_ops__retrieval_scores
+    description: One row per measure of a question under one search mode.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [app, run_id, retrieval_mode, case_id, metric]}
+
+  - name: stg_ai_ops__prices
+    description: One row per model per version of the price list.
+    data_tests:
+      - unique_combination:
+          arguments: {columns: [model, prices_as_of]}

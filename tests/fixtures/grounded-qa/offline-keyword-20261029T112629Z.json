@@ -1,0 +1,190 @@
+{
+ "name": "offline-keyword",
+ "model": "fake-model",
+ "provider": "fake",
+ "started_at": "2026-10-29T11:26:29+00:00",
+ "finished_at": "2026-10-29T11:26:30+00:00",
+ "prices_as_of": "2026-10-15",
+ "cases": 2,
+ "failures": 0,
+ "summary": {
+  "answered": 1.0,
+  "citation_precision": 1.0,
+  "correct": 1.0,
+  "dropped": 0.0,
+  "forbidden_hit": 0.0,
+  "mrr": 0.75,
+  "recall_at_k": 1.0,
+  "latency_p50_ms": 4.0,
+  "latency_p95_ms": 10.0,
+  "cost_total_usd": 0.0,
+  "cost_per_case_usd": 0.0,
+  "failure_rate": 0.0
+ },
+ "results": [
+  {
+   "case_id": "fmla-entitlement",
+   "tags": [
+    "fmla",
+    "direct"
+   ],
+   "ok": true,
+   "scores": {
+    "forbidden_hit": 0.0,
+    "dropped": 0,
+    "answered": 1.0,
+    "correct": 1.0,
+    "recall_at_k": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0
+   },
+   "output": {
+    "question": "How many weeks of FMLA leave can an eligible employee take in a 12-month period?",
+    "answer": "Eligible employees have the right to take up to 12 workweeks of FMLA leave in a 12-month period for any of the reasons listed below. [1]",
+    "outcome": "answered",
+    "citations": [
+     {
+      "n": 1,
+      "passage_id": "dol-whd-fs28f#5",
+      "doc_id": "dol-whd-fs28f",
+      "title": "Fact Sheet #28F: Reasons that Workers May Take Leave under the Family and Medical Leave Act",
+      "section": "REASONS EMPLOYEES MAY TAKE FMLA LEAVE",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28f-fmla-qualifying-reasons",
+      "revised": "March 2023",
+      "quote": "Eligible employees have the right to take up to 12 workweeks of FMLA leave in a 12-month period for any of the reasons listed below.",
+      "passage": "Eligible employees have the right to take up to 12 workweeks of FMLA leave in a 12-month period for any of the reasons listed below.\n\nBirth and bonding. Parents may use FMLA leave when their child is born and to bond with their child during the 12-month period beginning on the date of birth. All parents, regardless of sex, have the same right to take FMLA leave for the birth of a child and bonding.\n\nExamples:\n\n- Dolores\u2019 spouse gives birth to a child in March. Dolores takes ten weeks of FMLA leave beginning in June to bond with the newborn while traveling to visit family.\n- Ian takes 12 weeks of FMLA leave for bonding after a surrogate gives birth to his child.",
+      "spans": [
+       [
+        0,
+        131
+       ]
+      ]
+     }
+    ],
+    "dropped": 0,
+    "retrieved": [
+     {
+      "passage_id": "dol-whd-fs28#5",
+      "doc_id": "dol-whd-fs28",
+      "score": 0.016393
+     },
+     {
+      "passage_id": "dol-whd-fs28f#5",
+      "doc_id": "dol-whd-fs28f",
+      "score": 0.016129
+     },
+     {
+      "passage_id": "dol-whd-fs28h#5",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.015873
+     },
+     {
+      "passage_id": "dol-whd-fs28h#7",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.015625
+     },
+     {
+      "passage_id": "dol-whd-fs28a#5",
+      "doc_id": "dol-whd-fs28a",
+      "score": 0.015385
+     },
+     {
+      "passage_id": "dol-whd-fs28h#6",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.015152
+     }
+    ],
+    "model": "fake-model",
+    "prompt_version": "2026-10-29",
+    "mode": "keyword",
+    "request_id": "offline-keyword:fmla-entitlement"
+   },
+   "error": null,
+   "latency_ms": 10,
+   "cost_usd": 0.0,
+   "calls": 1
+  },
+  {
+   "case_id": "fmla-eligibility-hours",
+   "tags": [
+    "fmla",
+    "direct"
+   ],
+   "ok": true,
+   "scores": {
+    "forbidden_hit": 0.0,
+    "dropped": 0,
+    "answered": 1.0,
+    "correct": 1.0,
+    "recall_at_k": 1.0,
+    "mrr": 0.5,
+    "citation_precision": 1.0
+   },
+   "output": {
+    "question": "How many hours must an employee have worked in the last 12 months to be eligible for FMLA leave?",
+    "answer": "To be eligible, an employee must: have worked for the employer for at least 12 months; have worked at least 1250 hours during the 12 months preceding the start of leave; and be employed at a worksite where the employer has at least 50 employees within 75 miles. [1]",
+    "outcome": "answered",
+    "citations": [
+     {
+      "n": 1,
+      "passage_id": "dol-whd-fs28n#1",
+      "doc_id": "dol-whd-fs28n",
+      "title": "Fact Sheet #28N: Joint Employment and Primary and Secondary Employer Responsibilities Under the Family and Medical Leave Act (FMLA)",
+      "section": "INTRODUCTION",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28n-fmla-joint-employment",
+      "revised": "January 2020",
+      "quote": "To be eligible, an employee must: have worked for the employer for at least 12 months; have worked at least 1250 hours during the 12 months preceding the start of leave; and be employed at a worksite where the employer has at least 50 employees within 75 miles.",
+      "passage": "The Family and Medical Leave Act (FMLA) entitles eligible employees of covered employers to take unpaid, job-protected leave for specified family and medical reasons with continuation of group health insurance coverage under the same terms and conditions as if the employee had not taken leave. Generally, private employers with at least 50 employees are covered by the FMLA. Government agencies (including local, state and federal employers) and public and private elementary and secondary schools are covered by the FMLA, regardless of the number of employees. Only eligible employees are entitled to take FMLA leave. To be eligible, an employee must: have worked for the employer for at least 12 months; have worked at least 1250 hours during the 12 months preceding the start of leave; and be employed at a worksite where the employer has at least 50 employees within 75 miles. See Fact Sheet #28.",
+      "spans": [
+       [
+        620,
+        880
+       ]
+      ]
+     }
+    ],
+    "dropped": 0,
+    "retrieved": [
+     {
+      "passage_id": "dol-whd-fs28i#7",
+      "doc_id": "dol-whd-fs28i",
+      "score": 0.016393
+     },
+     {
+      "passage_id": "dol-whd-fs28n#1",
+      "doc_id": "dol-whd-fs28n",
+      "score": 0.016129
+     },
+     {
+      "passage_id": "dol-whd-fs28h#2",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.015873
+     },
+     {
+      "passage_id": "dol-whd-fs28i#5",
+      "doc_id": "dol-whd-fs28i",
+      "score": 0.015625
+     },
+     {
+      "passage_id": "dol-whd-fs21#6",
+      "doc_id": "dol-whd-fs21",
+      "score": 0.015385
+     },
+     {
+      "passage_id": "dol-whd-fs28e#3",
+      "doc_id": "dol-whd-fs28e",
+      "score": 0.015152
+     }
+    ],
+    "model": "fake-model",
+    "prompt_version": "2026-10-29",
+    "mode": "keyword",
+    "request_id": "offline-keyword:fmla-eligibility-hours"
+   },
+   "error": null,
+   "latency_ms": 4,
+   "cost_usd": 0.0,
+   "calls": 1
+  }
+ ]
+}

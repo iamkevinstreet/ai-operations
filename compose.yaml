@@ -1,0 +1,50 @@
+########################################################################
+#                                                                      #
+#                             compose.yaml                             #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# Airflow 3 on this machine, with Postgres for its metadata:
+#   docker compose --env-file config/.env up --build
+# The web UI listens on 127.0.0.1:8080 only; `airflow standalone` prints
+# the admin's generated password in its log. Files to load stay in a
+# folder of the repository: the same loaders read S3 in CI.
+
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_DB: airflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in config/.env}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 10
+
+  airflow:
+    build: .
+    command: standalone
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:\
+        ${POSTGRES_PASSWORD}@postgres/airflow"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/data-platform/dags
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      DATA_PLATFORM_HOME: /opt/data-platform
+      PYTHONPATH: /opt/data-platform/dags
+      RUNTIME__DLTHUB_TELEMETRY: "false"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - .:/opt/data-platform
+
+volumes:
+  postgres: {}

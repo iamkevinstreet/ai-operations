@@ -1,0 +1,28 @@
+-- Grain: one row per span of a committed trace, with its case.
+select
+    {{ surrogate_key(['app', 'run_id', 'span_id']) }} as span_key,
+    {{ surrogate_key(['app', 'run_id', 'case_id']) }} as case_key,
+    app,
+    run_id,
+    case_id,
+    trace_id,
+    span_id,
+    parent_id,
+    span_name,
+    operation,
+    span_kind,
+    started_at,
+    ended_at,
+    duration_ms,
+    status_code,
+    service_version,
+    request_model,
+    response_model,
+    input_tokens,
+    output_tokens,
+    cost_usd,
+    finish_reason,
+    error_type,
+    tool_name,
+    observation_type
+from {{ ref('int_ai_ops__spans') }}

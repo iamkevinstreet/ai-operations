@@ -1,0 +1,340 @@
+{
+ "name": "live-hybrid",
+ "model": "claude-sonnet-5-5",
+ "provider": "anthropic",
+ "started_at": "2026-11-07T20:40:14+00:00",
+ "finished_at": "2026-11-07T20:42:52+00:00",
+ "prices_as_of": "2026-10-15",
+ "cases": 3,
+ "failures": 0,
+ "summary": {
+  "answered": 1.0,
+  "citation_precision": 0.8889,
+  "correct": 1.0,
+  "dropped": 0.0,
+  "forbidden_hit": 0.0,
+  "mrr": 1.0,
+  "recall_at_k": 1.0,
+  "latency_p50_ms": 2482.0,
+  "latency_p95_ms": 2553.0,
+  "cost_total_usd": 0.0228,
+  "cost_per_case_usd": 0.007611,
+  "failure_rate": 0.0
+ },
+ "results": [
+  {
+   "case_id": "fmla-entitlement",
+   "tags": [
+    "fmla",
+    "direct"
+   ],
+   "ok": true,
+   "scores": {
+    "forbidden_hit": 0.0,
+    "dropped": 0,
+    "answered": 1.0,
+    "correct": 1.0,
+    "recall_at_k": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 0.6666666666666666
+   },
+   "output": {
+    "question": "How many weeks of FMLA leave can an eligible employee take in a 12-month period?",
+    "answer": "For most FMLA reasons, an eligible employee can take up to 12 workweeks of leave in a 12-month period [1]. The exception is military caregiver leave, which allows up to 26 workweeks during a single 12-month period [2]. The 12-month period can be set in several ways, such as the calendar year, a fixed 12-month period, a period measured forward from the first leave date, or a rolling period measured backward [3].",
+    "outcome": "answered",
+    "citations": [
+     {
+      "n": 1,
+      "passage_id": "dol-whd-fs28#5",
+      "doc_id": "dol-whd-fs28",
+      "title": "Fact Sheet #28: The Family and Medical Leave Act",
+      "section": "USING FMLA LEAVE",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28-fmla",
+      "revised": "March 2025",
+      "quote": "Up to 12 workweeks of leave in a 12-month period for any FMLA leave reason except military caregiver leave",
+      "passage": "Eligible employees may take:\n\n- Up to 12 workweeks of leave in a 12-month period for any FMLA leave reason except military caregiver leave, and\n- Up to 26 workweeks of military caregiver leave during a single 12-month period.\n\nExamples:\n\n- Sheila works 32 hours a week at a shoe store. When Sheila needs to take FMLA leave for 12 weeks, she may use up to 32 hours of FMLA leave a week for 12 weeks.\n- Chester works 40 hours a week as an administrative assistant. When Chester needs to take FMLA leave for 12 weeks, he may use up to 40 hours of FMLA leave a week for 12 weeks.\n- Kayden works 50 hours a week as a cook at a restaurant. When Kayden needs to take FMLA leave for 12 weeks, he may use up to 50 hours of FMLA leave a week for 12 weeks.",
+      "spans": [
+       [
+        32,
+        138
+       ]
+      ]
+     },
+     {
+      "n": 2,
+      "passage_id": "dol-whd-fs28#5",
+      "doc_id": "dol-whd-fs28",
+      "title": "Fact Sheet #28: The Family and Medical Leave Act",
+      "section": "USING FMLA LEAVE",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28-fmla",
+      "revised": "March 2025",
+      "quote": "Up to 26 workweeks of military caregiver leave during a single 12-month period",
+      "passage": "Eligible employees may take:\n\n- Up to 12 workweeks of leave in a 12-month period for any FMLA leave reason except military caregiver leave, and\n- Up to 26 workweeks of military caregiver leave during a single 12-month period.\n\nExamples:\n\n- Sheila works 32 hours a week at a shoe store. When Sheila needs to take FMLA leave for 12 weeks, she may use up to 32 hours of FMLA leave a week for 12 weeks.\n- Chester works 40 hours a week as an administrative assistant. When Chester needs to take FMLA leave for 12 weeks, he may use up to 40 hours of FMLA leave a week for 12 weeks.\n- Kayden works 50 hours a week as a cook at a restaurant. When Kayden needs to take FMLA leave for 12 weeks, he may use up to 50 hours of FMLA leave a week for 12 weeks.",
+      "spans": [
+       [
+        146,
+        224
+       ]
+      ]
+     },
+     {
+      "n": 3,
+      "passage_id": "dol-whd-fs28h#5",
+      "doc_id": "dol-whd-fs28h",
+      "title": "Fact Sheet #28H: 12-month period under the Family and Medical Leave Act",
+      "section": "DEFINING THE 12-MONTH PERIOD",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28h-fmla-12-month-period",
+      "revised": "January 2024",
+      "quote": "A \u201crolling\u201d 12-month period measured backward from the date an employee takes FMLA leave",
+      "passage": "Eligible employees may use up to 12 workweeks of FMLA leave in a defined 12-month period or \u201cleave year\u201d for the birth or placement of a child, care of a family member with a serious health condition, their own serious health condition, and qualifying exigencies related to a family member\u2019s foreign deployment.\n\nThe 12-month period may be based on:\n\n- The calendar year,\n- Any fixed 12-month period, such as, a year starting on the employee\u2019s anniversary date, a fiscal year, or a 12-month period required by state law,\n- A 12-month period measured forward from the first date an employee takes FMLA leave, or\n- A \u201crolling\u201d 12-month period measured backward from the date an employee takes FMLA leave.",
+      "spans": [
+       [
+        613,
+        701
+       ]
+      ]
+     }
+    ],
+    "dropped": 0,
+    "retrieved": [
+     {
+      "passage_id": "dol-whd-fs28#5",
+      "doc_id": "dol-whd-fs28",
+      "score": 0.032522
+     },
+     {
+      "passage_id": "dol-whd-fs28h#5",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.032266
+     },
+     {
+      "passage_id": "dol-whd-fs28f#5",
+      "doc_id": "dol-whd-fs28f",
+      "score": 0.031281
+     },
+     {
+      "passage_id": "dol-whd-fs28h#6",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.031025
+     },
+     {
+      "passage_id": "dol-whd-fs28a#5",
+      "doc_id": "dol-whd-fs28a",
+      "score": 0.03101
+     },
+     {
+      "passage_id": "dol-whd-fs28h#7",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.03101
+     }
+    ],
+    "model": "claude-sonnet-5-5",
+    "prompt_version": "2026-10-29",
+    "mode": "hybrid",
+    "request_id": "live-hybrid:fmla-entitlement"
+   },
+   "error": null,
+   "latency_ms": 2482,
+   "cost_usd": 0.009132,
+   "calls": 1
+  },
+  {
+   "case_id": "fmla-eligibility-hours",
+   "tags": [
+    "fmla",
+    "direct"
+   ],
+   "ok": true,
+   "scores": {
+    "forbidden_hit": 0.0,
+    "dropped": 0,
+    "answered": 1.0,
+    "correct": 1.0,
+    "recall_at_k": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0
+   },
+   "output": {
+    "question": "How many hours must an employee have worked in the last 12 months to be eligible for FMLA leave?",
+    "answer": "An employee must have at least 1,250 hours of service with the employer during the 12 months before the FMLA leave starts. [1] This is one of several eligibility requirements; the employee must also have worked for a covered employer for at least 12 months and work at a location where the employer has at least 50 employees within 75 miles. [2]",
+    "outcome": "answered",
+    "citations": [
+     {
+      "n": 1,
+      "passage_id": "dol-whd-fs28e#3",
+      "doc_id": "dol-whd-fs28e",
+      "title": "Fact Sheet #28E: Requesting Leave under the Family and Medical Leave Act",
+      "section": "ABOUT THE FMLA > Eligible employees:",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28e-fmla-employee-notice",
+      "revised": "March 2025",
+      "quote": "Have at least 1,250 hours of service with the employer during the 12 months before their FMLA leave starts",
+      "passage": "Employees are eligible if they:\n\n- Work for a covered employer for at least 12 months,\n- Have at least 1,250 hours of service with the employer during the 12 months before their FMLA leave starts, and\n- Work at a location where the employer has at least 50 employees within 75 miles.",
+      "spans": [
+       [
+        89,
+        195
+       ]
+      ]
+     },
+     {
+      "n": 2,
+      "passage_id": "dol-whd-fs28e#3",
+      "doc_id": "dol-whd-fs28e",
+      "title": "Fact Sheet #28E: Requesting Leave under the Family and Medical Leave Act",
+      "section": "ABOUT THE FMLA > Eligible employees:",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28e-fmla-employee-notice",
+      "revised": "March 2025",
+      "quote": "Work at a location where the employer has at least 50 employees within 75 miles",
+      "passage": "Employees are eligible if they:\n\n- Work for a covered employer for at least 12 months,\n- Have at least 1,250 hours of service with the employer during the 12 months before their FMLA leave starts, and\n- Work at a location where the employer has at least 50 employees within 75 miles.",
+      "spans": [
+       [
+        203,
+        282
+       ]
+      ]
+     }
+    ],
+    "dropped": 0,
+    "retrieved": [
+     {
+      "passage_id": "dol-whd-fs28e#3",
+      "doc_id": "dol-whd-fs28e",
+      "score": 0.031545
+     },
+     {
+      "passage_id": "dol-whd-fs28h#2",
+      "doc_id": "dol-whd-fs28h",
+      "score": 0.030798
+     },
+     {
+      "passage_id": "dol-whd-fs28k#3",
+      "doc_id": "dol-whd-fs28k",
+      "score": 0.030798
+     },
+     {
+      "passage_id": "dol-whd-fs28c#3",
+      "doc_id": "dol-whd-fs28c",
+      "score": 0.030622
+     },
+     {
+      "passage_id": "dol-whd-fs28m#3",
+      "doc_id": "dol-whd-fs28m",
+      "score": 0.03009
+     },
+     {
+      "passage_id": "dol-whd-fs28i#5",
+      "doc_id": "dol-whd-fs28i",
+      "score": 0.029911
+     }
+    ],
+    "model": "claude-sonnet-5-5",
+    "prompt_version": "2026-10-29",
+    "mode": "hybrid",
+    "request_id": "live-hybrid:fmla-eligibility-hours"
+   },
+   "error": null,
+   "latency_ms": 2172,
+   "cost_usd": 0.006718,
+   "calls": 1
+  },
+  {
+   "case_id": "fmla-covered-private-employer",
+   "tags": [
+    "fmla",
+    "direct"
+   ],
+   "ok": true,
+   "scores": {
+    "forbidden_hit": 0.0,
+    "dropped": 0,
+    "answered": 1.0,
+    "correct": 1.0,
+    "recall_at_k": 1.0,
+    "mrr": 1.0,
+    "citation_precision": 1.0
+   },
+   "output": {
+    "question": "How many employees must a private employer have to be covered by the FMLA?",
+    "answer": "A private-sector employer is covered if it employs 50 or more employees in 20 or more workweeks in either the current or the previous calendar year [1]. Generally, private employers with at least 50 employees are covered [2]. Separately, to be eligible for leave, an employee must work at a worksite where the employer has at least 50 employees within 75 miles [2].",
+    "outcome": "answered",
+    "citations": [
+     {
+      "n": 1,
+      "passage_id": "dol-whd-fs28e#4",
+      "doc_id": "dol-whd-fs28e",
+      "title": "Fact Sheet #28E: Requesting Leave under the Family and Medical Leave Act",
+      "section": "ABOUT THE FMLA > Covered employers:",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28e-fmla-employee-notice",
+      "revised": "March 2025",
+      "quote": "Private-sector employers who employ 50 or more employees in 20 or more workweeks in either the current calendar year or previous calendar year",
+      "passage": "Covered employers under the FMLA include:\n\n- Private-sector employers who employ 50 or more employees in 20 or more workweeks in either the current calendar year or previous calendar year,\n- Public agencies, including Federal, State, and local government employers, regardless of the number of employees, and\n- Local educational agencies, including public school boards, public elementary and secondary schools, and private elementary and secondary schools, regardless of the number of employees.",
+      "spans": [
+       [
+        45,
+        187
+       ]
+      ]
+     },
+     {
+      "n": 2,
+      "passage_id": "dol-whd-fs28n#1",
+      "doc_id": "dol-whd-fs28n",
+      "title": "Fact Sheet #28N: Joint Employment and Primary and Secondary Employer Responsibilities Under the Family and Medical Leave Act (FMLA)",
+      "section": "INTRODUCTION",
+      "url": "https://www.dol.gov/agencies/whd/fact-sheets/28n-fmla-joint-employment",
+      "revised": "January 2020",
+      "quote": "Generally, private employers with at least 50 employees are covered by the FMLA.",
+      "passage": "The Family and Medical Leave Act (FMLA) entitles eligible employees of covered employers to take unpaid, job-protected leave for specified family and medical reasons with continuation of group health insurance coverage under the same terms and conditions as if the employee had not taken leave. Generally, private employers with at least 50 employees are covered by the FMLA. Government agencies (including local, state and federal employers) and public and private elementary and secondary schools are covered by the FMLA, regardless of the number of employees. Only eligible employees are entitled to take FMLA leave. To be eligible, an employee must: have worked for the employer for at least 12 months; have worked at least 1250 hours during the 12 months preceding the start of leave; and be employed at a worksite where the employer has at least 50 employees within 75 miles. See Fact Sheet #28.",
+      "spans": [
+       [
+        295,
+        374
+       ]
+      ]
+     }
+    ],
+    "dropped": 0,
+    "retrieved": [
+     {
+      "passage_id": "dol-whd-fs28k#4",
+      "doc_id": "dol-whd-fs28k",
+      "score": 0.032002
+     },
+     {
+      "passage_id": "dol-whd-fs28e#4",
+      "doc_id": "dol-whd-fs28e",
+      "score": 0.031778
+     },
+     {
+      "passage_id": "dol-whd-fs28n#1",
+      "doc_id": "dol-whd-fs28n",
+      "score": 0.031754
+     },
+     {
+      "passage_id": "dol-whd-fs28m#4",
+      "doc_id": "dol-whd-fs28m",
+      "score": 0.031498
+     },
+     {
+      "passage_id": "dol-whd-fs28c#4",
+      "doc_id": "dol-whd-fs28c",
+      "score": 0.030536
+     },
+     {
+      "passage_id": "dol-whd-fs77b#5",
+      "doc_id": "dol-whd-fs77b",
+      "score": 0.029437
+     }
+    ],
+    "model": "claude-sonnet-5-5",
+    "prompt_version": "2026-10-29",
+    "mode": "hybrid",
+    "request_id": "live-hybrid:fmla-covered-private-employer"
+   },
+   "error": null,
+   "latency_ms": 2553,
+   "cost_usd": 0.006982,
+   "calls": 1
+  }
+ ]
+}

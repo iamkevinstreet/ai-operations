@@ -1,0 +1,54 @@
+########################################################################
+#                                                                      #
+#                         dbt/seeds/_seeds.yml                         #
+#                                                                      #
+########################################################################
+# Author:            Kevin Street
+# Created on:        2026-11-08
+# Last modified on:  2026-11-08
+#
+# Reference tables kept in the repository: the three apps, and how each
+# published summary figure is rebuilt from case rows.
+
+seeds:
+  - name: apps
+    description: One row per app, with the metric its runs are judged by.
+    config:
+      column_types:
+        app: string
+        title: string
+        primary_metric: string
+        primary_metric_label: string
+        repository_url: string
+    columns:
+      - name: app
+        data_tests: [unique, not_null]
+      - name: primary_metric
+        data_tests: [not_null]
+
+  - name: published_metrics
+    description: >
+      How each figure an app publishes in a run's summary is rebuilt from
+      the warehouse's case metrics: which metric, which aggregate, over
+      which cases, and within what rounding. A metric of "*" stands for
+      every score of the same name, averaged over the cases that
+      completed, as the workbench's summary does.
+    config:
+      column_types:
+        run_format: string
+        published_metric: string
+        metric: string
+        denominator: string
+        aggregate: string
+        completed_only: boolean
+        tolerance: double
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [run_format, published_metric]
+    columns:
+      - name: aggregate
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [mean, sum, count, ratio, p50, p95]

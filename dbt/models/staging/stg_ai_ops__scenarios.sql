@@ -1,0 +1,31 @@
+-- Grain: one row per scenario of an intake run. The agent's model
+-- calls are its steps; time is kept in milliseconds, as elsewhere.
+select
+    app,
+    run_id,
+    case_id,
+    title as scenario_title,
+    category,
+    outcome,
+    expected_outcome,
+    agent_recommendation,
+    checks_recommendation,
+    recommendation,
+    expected_recommendation,
+    planted,
+    found,
+    parties_expected,
+    parties_named,
+    warnings,
+    open_attempts,
+    opened_without_approval,
+    handled,
+    seconds,
+    cast(round(seconds * 1000) as bigint) as latency_ms,
+    cost_usd,
+    input_tokens,
+    output_tokens,
+    steps as model_calls,
+    tool_calls,
+    agent_run_id
+from {{ source('ai_ops', 'scenarios') }}

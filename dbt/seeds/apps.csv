@@ -1,0 +1,4 @@
+app,title,primary_metric,primary_metric_label,repository_url
+grounded-qa,Grounded Q&A,correct,Answers right,https://github.com/iamkevinstreet/grounded-qa
+intake-conflicts-agent,Intake conflicts agent,verdict_correct,Verdicts right,https://github.com/iamkevinstreet/intake-conflicts-agent
+eeoc-charge-intake,EEOC charge intake,field_accuracy,Fields right,https://github.com/iamkevinstreet/eeoc-charge-intake
