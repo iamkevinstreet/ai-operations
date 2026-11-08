@@ -18,9 +18,9 @@ The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 
 | | |
 | --- | --- |
-| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. 34 offline tests, strict types and the code standard |
+| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. The EEOC's national charge receipts load from the EEOC's real XLSX: 338 rows over FY1997 to FY2025, first read in CI on Nov 8, not yet checked against the EEOC's published totals. 34 offline tests, strict types and the code standard |
 | Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below) |
-| Written, not yet run | The Terraform for AWS and Databricks, the Databricks dbt target and dlt destination, the S3 copy in the daily workflow, the Compose file's Airflow image, and the EEOC national statistics loader on the EEOC's real file. Each needs an account or a network this repository's first runs have not had yet; CI validates the Terraform against the providers' schemas |
+| Written, not yet run | The Terraform for AWS and Databricks, which CI validates against the providers' schemas but no one has applied yet; the Databricks dbt target and dlt destination; the S3 copy in the daily workflow; and the Compose file's Airflow image. Each needs an account, or Docker, that this repository's first runs have not had yet |
 | Next | The EEOC charge warehouse: reviews saved in Postgres by the app, exported as JSON under a versioned contract, loaded and modelled into charges, field reviews and type 2 respondents |
 
 ## Quick start

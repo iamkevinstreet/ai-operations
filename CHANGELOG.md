@@ -15,7 +15,9 @@ The first release: the AI operations load and mart, the schedules and the infras
 - The raw contract: one Pydantic model per raw table, which dlt reads for the columns, and models of
   the apps' file formats, so a changed format fails the load.
 - `python -m pipelines load eeoc-stats`: the EEOC's charge receipts by basis, read from the XLSX by
-  its shape. Not yet run on the EEOC's real file; CI runs it without failing the build until it is.
+  its shape. It first read the EEOC's real file in CI on Nov 8, 338 rows over FY1997 to FY2025;
+  until its figures are checked against the EEOC's published totals, CI reports a failure there
+  without failing the build.
 - The dbt project: 11 staging views, 4 intermediate views and 15 `ai_ops` marts with enforced
   contracts, 2 seeds, 4 unit tests, 92 data tests, and source freshness. `fct_run_metrics` rebuilds
   every published summary figure from case rows, and the build fails on any that differs beyond

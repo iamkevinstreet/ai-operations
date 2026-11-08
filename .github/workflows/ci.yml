@@ -128,8 +128,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      # The table is read by its shape; until a run proves the parser on the
-      # EEOC's real file, a failure here is reported without failing the build.
+      # The table is read by its shape. It read the EEOC's real file on Nov 8
+      # (338 rows, FY1997 to FY2025); until its figures are checked against the
+      # EEOC's published totals, a failure here is reported without failing the build.
       - name: Load the EEOC's national charge receipts
         run: make load-eeoc-stats
         continue-on-error: true
