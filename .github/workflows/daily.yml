@@ -9,10 +9,13 @@
 #
 # Runs the DAGs every day through Airflow itself, with `airflow dags
 # test`, so there is no Airflow server to pay for: the loads, then the
-# build, on DuckDB. When the repository's variables name an AWS role,
-# the warehouse and its docs are copied to the lake bucket through
-# GitHub's OIDC token; when they name a Databricks workspace, the same
-# loads and models run there too.
+# build, on DuckDB. Once the AWS_REGION variable is set, the warehouse
+# and its docs are copied to the lake bucket through GitHub's OIDC
+# token; once DATABRICKS_CATALOG is set, the same loads and models run
+# there too. Whatever names an account (the role, the bucket, the
+# workspace's host, the warehouse's path, the token) is a secret, so
+# this public repository's logs mask it; the two variables say only
+# which steps run.
 
 name: daily
 
@@ -69,17 +72,18 @@ jobs:
           retention-days: 30
 
       - name: Sign in to AWS as the CI role
-        if: vars.AWS_ROLE_ARN != ''
+        if: vars.AWS_REGION != ''
         # yamllint disable-line rule:line-length
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd  # v6.3.0
         with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          mask-aws-account-id: true
 
       - name: Copy the warehouse and its docs to the lake, by date
-        if: vars.AWS_ROLE_ARN != ''
+        if: vars.AWS_REGION != ''
         env:
-          BUCKET: ${{ vars.LAKE_BUCKET }}
+          BUCKET: ${{ secrets.LAKE_BUCKET }}
         run: |
           day="$(date -u +%Y-%m-%d)"
           aws s3 cp data/generated/warehouse.duckdb \
@@ -87,7 +91,7 @@ jobs:
           aws s3 cp dbt/target/static_index.html "s3://${BUCKET}/docs/${day}/index.html"
 
   databricks:
-    if: vars.DATABRICKS_HOST != ''
+    if: vars.DATABRICKS_CATALOG != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -95,9 +99,9 @@ jobs:
       GITHUB_TOKEN: ${{ github.token }}
       WAREHOUSE_DESTINATION: databricks
       DBT_TARGET: prod
-      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
-      DATABRICKS_HTTP_PATH: ${{ vars.DATABRICKS_HTTP_PATH }}
-      DATABRICKS_CATALOG: ${{ vars.DATABRICKS_CATALOG || 'kds' }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ secrets.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_CATALOG: ${{ vars.DATABRICKS_CATALOG }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1

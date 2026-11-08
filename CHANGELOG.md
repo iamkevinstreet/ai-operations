@@ -30,4 +30,7 @@ The first release: the AI operations load and mart, the schedules and the infras
   `https://` host is accepted; tags are sorted the way each adapter can sort them.
 - CI: lint, strict types, the code standard, 34 offline tests, the audit, the DAG tests, the real
   loads and build, Terraform's format and validation, and the Compose file's. A daily workflow runs
-  the DAGs with `airflow dags test`, and copies the warehouse to S3 when an AWS role is set.
+  the DAGs with `airflow dags test`, copies the warehouse to S3 once `AWS_REGION` is set, and runs
+  the loads and models on Databricks once `DATABRICKS_CATALOG` is set.
+- Whatever names an account (the AWS role and bucket, the Databricks host, HTTP path and token) is
+  a repository secret, so the public workflow logs mask it, the AWS account id included.

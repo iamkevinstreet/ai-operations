@@ -14,18 +14,22 @@ The lake bucket and the role GitHub Actions assumes to write to it.
 - `data-platform-ci`: trusted for `repo:iamkevinstreet/data-platform:ref:refs/heads/main` only, for an
   hour at most, allowed to list the bucket and to read and add objects, never to delete them.
 
-The first time, from AWS CloudShell, signed in to the account (no key is created or stored):
+The first time, from AWS CloudShell, signed in to the account (no key is created or stored).
+Replace `YOUR-LAKE-NAME` with a name of your own, 3 to 55 lowercase letters, numbers and hyphens,
+unique across AWS; the script refuses the placeholder and any name another account holds:
 
 ```bash
 git clone https://github.com/iamkevinstreet/data-platform && cd data-platform
-BUCKET=<a globally unique name> bash infra/bootstrap.sh
+BUCKET=YOUR-LAKE-NAME bash infra/bootstrap.sh
 ```
 
 [`bootstrap.sh`](bootstrap.sh) installs Terraform if CloudShell lacks it, makes a private, versioned
 state bucket named after the lake bucket, writes the root's `backend.hcl` (ignored by git), and
-applies the root. It prints the three repository variables to set: `AWS_ROLE_ARN`, `LAKE_BUCKET`
-and `AWS_REGION`. From then on the daily workflow copies the warehouse and its docs to the bucket.
-Run it again to apply a change; it changes only what differs.
+applies the root in CloudShell's region. It prints what to set in the repository's Actions settings:
+the secrets `AWS_ROLE_ARN` and `LAKE_BUCKET`, which name the account and stay masked in the public
+logs, and the variable `AWS_REGION`, which turns the copy on. From then on the daily workflow copies
+the warehouse and its docs to the bucket. Run it again with the same name to apply a change; it
+changes only what differs.
 
 ## databricks
 
@@ -43,9 +47,11 @@ terraform apply                                  # or -var create_catalog=false 
 ```
 
 This root is optional for the first loads: dlt and dbt create their own schemas in the catalog the
-`DATABRICKS_CATALOG` variable names, such as the Free Edition's own `workspace`.
-
-The output `sql_warehouse_http_path` is `DATABRICKS_HTTP_PATH` for dbt and dlt.
+`DATABRICKS_CATALOG` variable names, such as the Free Edition's own `workspace`. Setting that
+variable turns the daily workflow's Databricks job on. It reads three secrets: `DATABRICKS_HOST`
+(the SQL warehouse's server hostname, without `https://`), `DATABRICKS_HTTP_PATH` (its HTTP path,
+also this root's output `sql_warehouse_http_path`) and `DATABRICKS_TOKEN`, a personal access token
+scoped to `sql`, `files` and `unity-catalog`.
 
 ## Not yet known
 
