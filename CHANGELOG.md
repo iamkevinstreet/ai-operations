@@ -16,8 +16,8 @@ The first release: the AI operations load and mart, the schedules and the infras
   the apps' file formats, so a changed format fails the load.
 - `python -m pipelines load eeoc-stats`: the EEOC's charge receipts by basis, read from the XLSX by
   its shape. Not yet run on the EEOC's real file; CI runs it without failing the build until it is.
-- The dbt project: 11 staging views, 4 intermediate views and 14 `ai_ops` marts with enforced
-  contracts, 2 seeds, 4 unit tests, 90 data tests, and source freshness. `fct_run_metrics` rebuilds
+- The dbt project: 11 staging views, 4 intermediate views and 15 `ai_ops` marts with enforced
+  contracts, 2 seeds, 4 unit tests, 92 data tests, and source freshness. `fct_run_metrics` rebuilds
   every published summary figure from case rows, and the build fails on any that differs beyond
   rounding; a singular test holds every recorded call cost to the list price.
 - Three Airflow 3 DAGs: two loads that update assets, and a build scheduled on either asset.

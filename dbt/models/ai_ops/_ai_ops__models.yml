@@ -353,3 +353,23 @@ models:
       - {name: mean_ms, data_type: double}
       - {name: p50_ms, data_type: double}
       - {name: p95_ms, data_type: double}
+
+  - name: rpt_field_accuracy
+    description: >
+      One row per run and field, for apps that score each field (EEOC): how
+      often the model read the field right, over the cases that completed.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [app, run_id, field_name]
+    columns:
+      - {name: app, data_type: string}
+      - {name: run_id, data_type: string}
+      - {name: field_name, data_type: string}
+      - {name: cases, data_type: bigint}
+      - name: accuracy
+        data_type: double
+        data_tests:
+          - between:
+              arguments: {min_value: 0, max_value: 1}
+      - {name: wrong_cases, data_type: bigint}

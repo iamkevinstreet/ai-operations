@@ -18,7 +18,7 @@ The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 
 | | |
 | --- | --- |
-| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 14 tables, 4 unit tests and 90 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. 34 offline tests, strict types and the code standard |
+| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. 34 offline tests, strict types and the code standard |
 | Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below) |
 | Written, not yet run | The Terraform for AWS and Databricks, the Databricks dbt target and dlt destination, the S3 copy in the daily workflow, the Compose file's Airflow image, and the EEOC national statistics loader on the EEOC's real file. Each needs an account or a network this repository's first runs have not had yet; CI validates the Terraform against the providers' schemas |
 | Next | The EEOC charge warehouse: reviews saved in Postgres by the app, exported as JSON under a versioned contract, loaded and modelled into charges, field reviews and type 2 respondents |
@@ -97,6 +97,10 @@ From a load of the apps' Nov 7 commits, Nov 8, 2026, on DuckDB.
 | Costed | 319 of 319 model calls: each recorded cost equals its tokens at the list price valid on its run's date |
 | Spent | $7.02 on the 10 live runs |
 
+Where extraction went wrong: EEOC's one run below 100% (Oct 17) missed in one field only. `issues`
+was wrong on 28 of its 40 documents, and every other field was right on all 40, which is what the
+EEOC project's own README says of that run. Every later run was right on every field.
+
 Where a traced case's time goes, from the Nov 7 traces: the model call is 98.6% (intake agent) to
 99.8% (EEOC, Grounded keyword) of it. Hybrid retrieval is 0.6% of a Grounded answer, the intake
 agent's tool calls 1.1%, and every quote check under 0.1%. So the model is the lever for speed, and
@@ -134,6 +138,7 @@ matching the expected one (intake). The Nov 7 runs are on the apps' publish bran
 | `rpt_cost_by_month` | Month, app and model, over live runs |
 | `rpt_run_changes` | Live run beside the last run of its name: how the judged metric, cost and time moved |
 | `rpt_latency_by_operation` | Traced run and operation; an operation's time includes the spans under it |
+| `rpt_field_accuracy` | Run and field, for an app that scores each field: how often the model read it right |
 
 ## Design
 
