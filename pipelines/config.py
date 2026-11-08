@@ -37,7 +37,7 @@ from typing import Final, Literal, Self
 # Third-party
 from kds.logs import get_logger
 from kds.settings import Settings
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 
 ########################################################################
 #                                                                      #
@@ -140,6 +140,24 @@ class AppSettings(Settings):
 
     # log.debug("Holds the text encoding of every file read or written")
     files_encoding: str = "utf-8"
+
+    # log.debug("Defines the host as a name, whichever way it was pasted")
+    @field_validator("databricks_host")
+    @classmethod
+    def _host(cls, host: str | None = None) -> str | None:
+        """Strips a scheme and a trailing slash from the host.
+
+        dbt and dlt take the bare host name; a browser shows https://
+        in front of it.
+
+        Args:
+            host: The host as set, or None.
+
+        Returns:
+            The bare host name, or None.
+        """
+        # log.debug("Returns the host without its scheme or a trailing slash")
+        return host.removeprefix("https://").rstrip("/") if host else host
 
     # log.debug("Defines the checks across fields")
     @model_validator(mode="after")

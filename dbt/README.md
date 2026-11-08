@@ -10,7 +10,7 @@ One dbt project, built in DuckDB (`dev`, CI) or Databricks (`prod`). Run it thro
 | `models/intermediate/` | The apps' two run formats lined up to one grain | Views in `intermediate` |
 | `models/ai_ops/` | The published AI operations mart: `dim_`, `fct_` and `rpt_` tables, each with an enforced contract, in the `ai_ops` group, public | Tables in `ai_ops` |
 | `seeds/` | `apps` and `published_metrics`, the reference tables | Tables in `reference` |
-| `macros/` | The schema names, a surrogate key, and two generic tests | |
+| `macros/` | The schema names, a surrogate key, a sorted list each adapter writes its own way, and two generic tests | |
 | `tests/` | The list-price check on every call, and a trace for every case of a traced run | |
 
 The repository's code standard allows three folders below the root, so the published marts sit in

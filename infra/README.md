@@ -14,14 +14,18 @@ The lake bucket and the role GitHub Actions assumes to write to it.
 - `data-platform-ci`: trusted for `repo:iamkevinstreet/data-platform:ref:refs/heads/main` only, for an
   hour at most, allowed to list the bucket and to read and add objects, never to delete them.
 
+The first time, from AWS CloudShell, signed in to the account (no key is created or stored):
+
 ```bash
-cd infra/aws
-terraform init -backend-config=backend.hcl   # bucket, key and region of the state; never committed
-terraform apply -var bucket_name=<a globally unique name>
+git clone https://github.com/iamkevinstreet/data-platform && cd data-platform
+BUCKET=<a globally unique name> bash infra/bootstrap.sh
 ```
 
-Then set the repository variables `AWS_ROLE_ARN` (the `ci_role_arn` output), `LAKE_BUCKET` and
-`AWS_REGION`, and the daily workflow copies the warehouse and its docs to the bucket.
+[`bootstrap.sh`](bootstrap.sh) installs Terraform if CloudShell lacks it, makes a private, versioned
+state bucket named after the lake bucket, writes the root's `backend.hcl` (ignored by git), and
+applies the root. It prints the three repository variables to set: `AWS_ROLE_ARN`, `LAKE_BUCKET`
+and `AWS_REGION`. From then on the daily workflow copies the warehouse and its docs to the bucket.
+Run it again to apply a change; it changes only what differs.
 
 ## databricks
 
@@ -34,9 +38,12 @@ only on a catalog this root created.
 ```bash
 cd infra/databricks
 export DATABRICKS_HOST=... DATABRICKS_TOKEN=...   # a workspace token; workspace APIs only
-terraform init -backend-config=backend.hcl
+terraform init -backend-config=backend.hcl       # the state bucket, key databricks/terraform.tfstate
 terraform apply                                  # or -var create_catalog=false -var catalog=workspace
 ```
+
+This root is optional for the first loads: dlt and dbt create their own schemas in the catalog the
+`DATABRICKS_CATALOG` variable names, such as the Free Edition's own `workspace`.
 
 The output `sql_warehouse_http_path` is `DATABRICKS_HTTP_PATH` for dbt and dlt.
 

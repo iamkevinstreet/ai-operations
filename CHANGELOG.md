@@ -24,6 +24,10 @@ The first release: the AI operations load and mart, the schedules and the infras
 - Terraform for AWS (a private, versioned, TLS-only bucket and a CI role assumed through GitHub's
   OIDC token) and for Databricks (catalog, schemas, a landing volume, groups and grants).
 - `compose.yaml` and a Dockerfile for Airflow and its Postgres on one machine.
+- `infra/bootstrap.sh`: the AWS side built once from CloudShell, with Terraform's state in a private,
+  versioned bucket of its own.
+- On Databricks, the catalog comes from the `DATABRICKS_CATALOG` variable, and a pasted
+  `https://` host is accepted; tags are sorted the way each adapter can sort them.
 - CI: lint, strict types, the code standard, 34 offline tests, the audit, the DAG tests, the real
   loads and build, Terraform's format and validation, and the Compose file's. A daily workflow runs
   the DAGs with `airflow dags test`, and copies the warehouse to S3 when an AWS role is set.

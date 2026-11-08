@@ -5,7 +5,7 @@ with tags as (
         app,
         run_id,
         case_id,
-        {{ dbt.listagg('tag', "', '", 'order by tag') }} as tags
+        {{ sorted_list('tag') }} as tags
     from {{ ref('stg_ai_ops__case_tags') }}
     group by app, run_id, case_id
 ),

@@ -9,6 +9,6 @@ select
     avg(metric_value) as accuracy,
     cast(sum(case when metric_value < 1 then 1 else 0 end) as bigint) as wrong_cases
 from {{ ref('fct_case_metrics') }}
-where metric like 'f\_%' escape '\'
+where substr(metric, 1, 2) = 'f_'
     and coalesce(completed, true)
 group by app, run_id, substr(metric, 3)
