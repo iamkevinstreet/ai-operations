@@ -18,6 +18,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  # By hand, on any branch: before a repository has a main, a branch has no pull request to run on.
+  workflow_dispatch:
   workflow_call:
     inputs:
       ref:
