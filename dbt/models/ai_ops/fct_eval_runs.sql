@@ -1,6 +1,9 @@
 -- Grain: one row per evaluation run (retrieval runs are in
 -- fct_retrieval_scores). Percentiles are nearest-rank, as the apps
 -- publish them, so a run's figures here equal its own summary's.
+-- percentile_disc keeps the latency's type on DuckDB but returns a
+-- double on Databricks; the value is always one of the latencies, so
+-- the cast to bigint loses nothing.
 with runs as (
     select * from {{ ref('stg_ai_ops__runs') }}
     where run_format <> 'retrieval'
@@ -15,8 +18,10 @@ cases as (
             as failed_cases,
         sum(cost_usd) as cost_usd,
         avg(cost_usd) as cost_per_case_usd,
-        percentile_disc(0.5) within group (order by latency_ms) as latency_p50_ms,
-        percentile_disc(0.95) within group (order by latency_ms) as latency_p95_ms,
+        cast(percentile_disc(0.5) within group (order by latency_ms) as bigint)
+            as latency_p50_ms,
+        cast(percentile_disc(0.95) within group (order by latency_ms) as bigint)
+            as latency_p95_ms,
         cast(sum(model_calls) as bigint) as model_calls
     from {{ ref('int_ai_ops__cases') }}
     group by app, run_id
