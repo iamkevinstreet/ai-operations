@@ -36,3 +36,6 @@ The first release: the AI operations load and mart, the schedules and the infras
   the loads and models on Databricks once `DATABRICKS_CATALOG` is set.
 - Whatever names an account (the AWS role and bucket, the Databricks host, HTTP path and token) is
   a repository secret, so the public workflow logs mask it, the AWS account id included.
+- First runs on Databricks, Nov 8: the load and all 128 models, seeds and tests pass on the Free
+  Edition's 2X-Small SQL warehouse. The first build broke one contract: `percentile_disc` returns a
+  double there, so the run percentiles are cast to bigint, which loses nothing.

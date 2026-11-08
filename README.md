@@ -19,8 +19,9 @@ The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 | | |
 | --- | --- |
 | Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. The EEOC's national charge receipts load from the EEOC's real XLSX: 338 rows over FY1997 to FY2025, first read in CI on Nov 8, not yet checked against the EEOC's published totals. 34 offline tests, strict types and the code standard |
-| Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below) |
-| Written, not yet run | The Terraform for AWS and Databricks, which CI validates against the providers' schemas but no one has applied yet; the Databricks dbt target and dlt destination; the S3 copy in the daily workflow; and the Compose file's Airflow image. Each needs an account, or Docker, that this repository's first runs have not had yet |
+| Works on Databricks | The same load and build on the Databricks Free Edition's serverless 2X-Small SQL warehouse, from the daily workflow: all 128 models, seeds and tests pass, the reconciliation and the price check among them. On Nov 8 the load took 40 s with the warehouse warm (1 min 44 s from cold) and the build 68 s |
+| Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below), on DuckDB and on Databricks alike |
+| Written, not yet run | The S3 copy in the daily workflow, which runs from main only, where the AWS role is trusted; the Databricks Terraform root, which is optional, since dlt and dbt make their own schemas; and the Compose file's Airflow image, which needs Docker. CI validates both Terraform roots against the providers' schemas |
 | Next | The EEOC charge warehouse: reviews saved in Postgres by the app, exported as JSON under a versioned contract, loaded and modelled into charges, field reviews and type 2 respondents |
 
 ## Quick start
