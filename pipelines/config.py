@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Loads every setting the loaders, the build and the DAGs read, typed and
 validated. Values come from config/config.toml and secrets from
@@ -61,11 +61,11 @@ COMMIT: Final = re.compile(r"[0-9a-f]{40}")
 REPOSITORY: Final = re.compile(r"[a-z0-9][a-z0-9-]*")
 # log.debug("Sets the utils commit the shared packages and the price list come from")
 UTILS: Final = "97157184471beb28ed129eb52086c36f76ef3e55"
-# log.debug("Pins each app's results to its Nov 7 publish commit")
+# log.debug("Pins each app's results to its main after the Nov 8 merges")
 APPS: Final = {
-    "grounded-qa": "c6f4659d186c114db0ae8c3262ba408b75b0024a",
-    "intake-conflicts-agent": "ff9f7c16dde24d6ecf0b706730d5a44fd9bc99dd",
-    "eeoc-charge-intake": "a42121a5256d5307dde1dd581a42f07f13b7f7bd",
+    "grounded-qa": "5226cbf61bcdf74eb6794e5266d38fc8c1c453de",
+    "intake-conflicts-agent": "97d4c52ab7495d2f47491ee7c65cc93cb7ca95b9",
+    "eeoc-charge-intake": "bae5b7c9f588a334fad3280e171a8052b2220c03",
 }
 # log.debug("Sets where the EEOC publishes its charge receipts by basis")
 EEOC_RECEIPTS: Final = (

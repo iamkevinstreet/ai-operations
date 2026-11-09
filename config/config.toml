@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # Every setting the loaders, the build and the DAGs read, at its
 # default. No secrets: those go in config/.env.
@@ -41,12 +41,12 @@ prices_path = "llm/kds/llm/pricing.json"
 prices_commits = ["97157184471beb28ed129eb52086c36f76ef3e55"]
 
 # Each app's results at one reviewed commit: a load is repeatable, and a new
-# run reaches the warehouse only when its pin moves. These are the Nov 7
-# publish commits; move each to its main commit once that is merged.
+# run reaches the warehouse only when its pin moves. These are each app's
+# main after the Nov 8 merges; move a pin when a new run is published.
 [ai_ops.apps]
-grounded-qa = "c6f4659d186c114db0ae8c3262ba408b75b0024a"
-intake-conflicts-agent = "ff9f7c16dde24d6ecf0b706730d5a44fd9bc99dd"
-eeoc-charge-intake = "a42121a5256d5307dde1dd581a42f07f13b7f7bd"
+grounded-qa = "5226cbf61bcdf74eb6794e5266d38fc8c1c453de"
+intake-conflicts-agent = "97d4c52ab7495d2f47491ee7c65cc93cb7ca95b9"
+eeoc-charge-intake = "bae5b7c9f588a334fad3280e171a8052b2220c03"
 
 [eeoc_stats]
 dataset = "raw_eeoc_stats"                # the schema the EEOC's statistics load into
