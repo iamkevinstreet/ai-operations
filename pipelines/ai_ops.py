@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 The dlt source for AI operations: every run each app committed, its
 cases, scores and calls, its trace when it has one, and the price list
@@ -14,7 +14,8 @@ the calls were costed at.
 
 Each table merges on its key, so loading the same pins twice changes
 nothing, and moving a pin adds only the new runs. Every file is read
-once per load, whichever tables it feeds.
+once per load, whichever tables it feeds. load_ai_ops runs the source
+into the warehouse, as `python -m pipelines load ai-ops`.
 """
 
 ########################################################################
@@ -27,7 +28,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Iterator, Sequence
-from datetime import datetime
+from datetime import UTC, datetime
 from functools import cached_property
 from typing import Final
 
@@ -36,11 +37,12 @@ import dlt
 from dlt.extract.resource import DltResource
 from kds.args import required
 from kds.logs import get_logger, log_event
+from kds.pipelines import load
 from pydantic import BaseModel
 
 # Local
-from pipelines.config import SETTINGS
-from pipelines.github import Reader
+from pipelines.config import SETTINGS, AppSettings
+from pipelines.github import GitHubReader, Reader
 from pipelines.prices import parse_prices
 from pipelines.results import is_trace, kind_of, parse_run
 from pipelines.rows import (
@@ -78,6 +80,8 @@ ENCODING: Final = SETTINGS.files_encoding
 #                           Local constants                            #
 #                                                                      #
 ########################################################################
+# log.debug("Sets the pipeline's name, which names its state under data/generated/dlt")
+PIPELINE: Final = "ai-ops"
 # log.debug("Sets the table every trace's spans go to")
 SPANS_TABLE: Final = "spans"
 # log.debug("Lists every table of a run: its row model and its key")
@@ -244,6 +248,28 @@ def ai_ops(
             columns=PriceRow,
         ),
     ]
+
+
+# log.debug("Defines the load of the apps' results and the price list")
+def load_ai_ops(settings: AppSettings | None = None) -> None:
+    """Loads every app's results at its pin, and the price list.
+
+    Args:
+        settings: The pins, GitHub and the warehouse. Required.
+    """
+    # log.debug("Takes the settings, which the caller must give")
+    settings = required(settings=settings)
+    # log.debug("Builds the reader of every app at its pin")
+    reader = GitHubReader(settings, pins=settings.ai_ops_apps)
+    # log.debug("Builds the source, stamped with this load's time")
+    source = ai_ops(
+        reader,
+        list(settings.ai_ops_apps),
+        settings.ai_ops_prices_commits,
+        loaded_at=datetime.now(UTC),
+    )
+    # log.debug("Loads it")
+    load(settings, name=PIPELINE, dataset=settings.ai_ops_dataset, source=source)
 
 
 # log.debug("Defines the price list's rows")

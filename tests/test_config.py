@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Tests that config/config.toml lists every setting at its default and no
 secret, that a pin which could move is refused, and that Databricks is
@@ -27,6 +27,7 @@ from typing import Any
 # Third-party
 import pytest
 from kds.logs import get_logger
+from kds.settings import Settings
 from kds.settings.toml import flatten, is_secret
 from pydantic import ValidationError
 
@@ -60,16 +61,14 @@ def _file_values() -> dict[str, Any]:
 
 # log.debug("Defines the test that the file matches the defaults")
 def test_the_settings_file_lists_every_default() -> None:
-    """Every field this project adds is in the file, as defaulted."""
+    """Every setting beyond logging's is in the file, as defaulted."""
     # log.debug("Reads the file")
     values = _file_values()
-    # log.debug("Lists the fields this project adds that are not secrets or connections")
+    # log.debug("Lists the settings beyond logging's that are not secrets or connections")
     own = {
         name
         for name, field in AppSettings.model_fields.items()
-        if name not in AppSettings.__base__.model_fields  # type: ignore[union-attr]
-        and not is_secret(field)
-        and field.default is not None
+        if name not in Settings.model_fields and not is_secret(field) and field.default is not None
     }
     # log.debug("Checks the file names each of them")
     assert own <= set(values), own - set(values)

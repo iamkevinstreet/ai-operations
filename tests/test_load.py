@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Tests the AI ops load end to end, offline: the fixtures load into a
 DuckDB file of the test's own, a second load of the same pins changes
@@ -35,11 +35,11 @@ import duckdb
 import pytest
 from kds.args import required
 from kds.logs import get_logger
+from kds.pipelines import load
 
 # Local
 from pipelines.ai_ops import ai_ops
 from pipelines.config import AppSettings
-from pipelines.warehouse import load
 from support import APPS, PIN, FolderReader, settings_in
 
 ########################################################################

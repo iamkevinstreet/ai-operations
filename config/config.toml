@@ -13,7 +13,8 @@
 # Each key's name is its section and key joined: [warehouse] path is
 # warehouse_path, and the environment variable WAREHOUSE_PATH overrides
 # it. A nested table is one setting: [ai_ops.apps] is ai_ops_apps. A
-# test keeps this file equal to the defaults in pipelines/config.py.
+# test keeps this file equal to the defaults in code: this project's
+# own in pipelines/config.py, the shared ones in kds.pipelines.
 
 [warehouse]
 destination = "duckdb"                    # duckdb (one file, here and in CI) | databricks

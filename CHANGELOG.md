@@ -2,7 +2,10 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## v0.3.0 (Nov 9, 2026)
+
+The settings, loads, dbt runs and command that every project's data layers need are now the utils
+package `kds-pipelines`, which this project's code was the first copy of.
 
 ### Added
 
@@ -12,6 +15,26 @@ Every release, newest first. Versions follow [Semantic Versioning](https://semve
   headers it changes, runs the whole of CI on that commit, and moves `main` to it only when every
   check passes. One whose checks fail is labelled "needs a person" and waits; one that changes a
   workflow waits for the `DEPENDENCY_UPDATES_TOKEN` secret.
+
+### Changed
+
+- `python -m pipelines` is `kds.pipelines`' shared command, and the settings build on its
+  `PipelineSettings`: the warehouse, dlt's state, dbt and Databricks settings, with Databricks
+  refused when half set up. This project keeps only its own: GitHub's, and the AI operations load's
+  pins, schema and price list.
+- The load of the apps' results is `load_ai_ops` in `pipelines/ai_ops.py`, beside its source;
+  `pipelines/__main__.py` only names it.
+- The utils packages move to v0.7.0 (`df52461`). The price list is still read at `9715718`.
+
+### Removed
+
+- `pipelines/warehouse.py` and `pipelines/transform.py`, now in `kds.pipelines`.
+
+### Tests
+
+- The real load and build on DuckDB, from an empty warehouse: the same 26 raw and mart tables with
+  the same row counts as before, all 128 models, seeds and tests passing, and 194 of 194 published
+  figures reconciled. 27 offline tests.
 
 ## v0.2.0 (Nov 9, 2026)
 

@@ -15,16 +15,17 @@
 
 [project]
 name = "ai-operations"
-version = "0.2.0"
+version = "0.3.0"
 description = "Cost, quality and speed across every AI app: dlt loads, dbt models, Airflow schedules."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Kevin Street", email = "info@kevindstreet.com" }]
 dependencies = [
-  "kds-args>=0.6.0,<0.7",
-  "kds-settings>=0.6.0,<0.7",
-  "kds-logs>=0.6.0,<0.7",
+  "kds-args>=0.7.0,<0.8",
+  "kds-settings>=0.7.0,<0.8",
+  "kds-logs>=0.7.0,<0.8",
+  "kds-pipelines>=0.7.0,<0.8",
   # dlt supports DuckDB below 2.0, so the lock holds DuckDB 1.5.
   "dlt[duckdb]==1.32.0",
   "dbt-core==1.12.6",
@@ -42,7 +43,7 @@ dev = [
   "ruff==0.17.3",
   "types-PyYAML>=6.0",
   "types-requests>=2.32",
-  "kds-standards>=0.6.0,<0.7",
+  "kds-standards>=0.7.0,<0.8",
 ]
 # The scheduler, for the DAG tests and for running a DAG end to end with `airflow dags test`.
 airflow = ["apache-airflow==3.4.0"]
@@ -52,10 +53,11 @@ databricks = ["dbt-databricks==1.13.0", "dlt[databricks]==1.32.0"]
 # Our own packages come from the utils repository at one reviewed commit; none
 # of them is on PyPI, so a same-named public package can never be installed.
 [tool.uv.sources]
-kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "97157184471beb28ed129eb52086c36f76ef3e55" }
-kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "97157184471beb28ed129eb52086c36f76ef3e55" }
-kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "97157184471beb28ed129eb52086c36f76ef3e55" }
-kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "97157184471beb28ed129eb52086c36f76ef3e55" }
+kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
+kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
+kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
+kds-pipelines = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "pipelines", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
+kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

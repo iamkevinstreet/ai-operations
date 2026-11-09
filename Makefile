@@ -20,7 +20,7 @@
 UV := uv run --no-sync
 PIPELINES := $(UV) python -m pipelines
 # Our own packages install from git, not PyPI, so the PyPI audit leaves them out.
-KDS := kds-args kds-settings kds-logs kds-standards
+KDS := kds-args kds-settings kds-logs kds-pipelines kds-standards
 AUDIT_FILE := data/generated/requirements-audit.txt
 # oauthlib 3.3.1, in the databricks group only: dbt-databricks 1.13.0, the newest, caps its SQL
 # connector below 4.4.1, which caps oauthlib below 4. Drop these once it allows connector 4.9.

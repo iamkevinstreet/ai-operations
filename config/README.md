@@ -7,7 +7,9 @@ names each one), and the settings refuse a secret written in `config.toml`.
 ## How a value is chosen
 
 Highest first: an environment variable, then `config/.env`, then `config.toml`, then the default in
-[`pipelines/config.py`](../pipelines/config.py). Each key's environment name is its section and key
+code: [`pipelines/config.py`](../pipelines/config.py) for this project's own settings, and the
+utils package `kds.pipelines` for the warehouse, `[dbt]`, `[databricks]` and `[files]` ones every
+project shares. Each key's environment name is its section and key
 joined by an underscore, in capitals: `[warehouse] path` is `WAREHOUSE_PATH`. A nested table is one
 setting: `[ai_ops.apps]` is `AI_OPS_APPS`, a JSON object in the environment. A test
 (`tests/test_config.py`) keeps `config.toml` equal to the defaults in code.

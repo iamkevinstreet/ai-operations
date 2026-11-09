@@ -163,7 +163,8 @@ merges, which hold the same runs.
   Spark, streaming, Delta tables readable as Iceberg, Unity Catalog and vector search.
 - **dlt for loading.** Each source is a short Python file a reviewer can read, with schema inference
   held in check by the Pydantic contract, merge loads on natural keys, and the same code for DuckDB
-  and Databricks.
+  and Databricks. The loading itself, dbt's runs and the command are the utils package
+  `kds.pipelines`, which every project shares, so this repository holds only its own source.
 - **Airflow only schedules.** Every task runs `uv run --no-sync python -m pipelines ...` in the
   locked environment, so a DAG holds no logic of its own, and moving to a hosted Airflow (Astro,
   MWAA) changes the deployment, not the code. The daily workflow runs the DAGs with
@@ -181,9 +182,10 @@ merges, which hold the same runs.
 ## Configuration
 
 Every setting is in [`config/config.toml`](config/config.toml), at its default, and a test keeps it
-equal to the defaults in [`pipelines/config.py`](pipelines/config.py). Secrets go in `config/.env`;
-[`config/.env.example`](config/.env.example) names each. A load to DuckDB needs none. See
-[`config/README.md`](config/README.md).
+equal to the defaults in code: this project's own in [`pipelines/config.py`](pipelines/config.py),
+and the warehouse, dbt and Databricks ones in `kds.pipelines`, which every project shares. Secrets
+go in `config/.env`; [`config/.env.example`](config/.env.example) names each. A load to DuckDB needs
+none. See [`config/README.md`](config/README.md).
 
 ## Testing
 
@@ -203,7 +205,7 @@ them, validates the Compose file, and scans the whole history for secrets.
 
 | Path | What it holds |
 | --- | --- |
-| `pipelines/` | The dlt sources, the raw contract, and `python -m pipelines`, which the DAGs run |
+| `pipelines/` | The dlt source and its load, the raw contract, and the loads `python -m pipelines` runs; the command, the warehouse's settings and dbt's runs are the utils package `kds.pipelines` |
 | `dbt/` | The dbt project: staging, intermediate and `ai_ops` models, seeds, macros and tests |
 | `dags/` | The Airflow 3 DAGs ([`dags/README.md`](dags/README.md)) |
 | `config/` | Every setting and the secrets template ([`config/README.md`](config/README.md)) |

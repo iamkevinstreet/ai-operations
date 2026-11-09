@@ -10,7 +10,10 @@ Last modified on:  2026-11-09
 
 Loads every setting the loaders, the build and the DAGs read, typed and
 validated. Values come from config/config.toml and secrets from
-config/.env; an environment variable overrides either.
+config/.env; an environment variable overrides either. The warehouse,
+dlt's state, dbt and Databricks settings are kds.pipelines', which
+every project shares; the GitHub and AI operations ones are this
+project's own.
 
 Each field is a `[section] key` of config/config.toml joined by an
 underscore: `[warehouse] path` is `warehouse_path`, which WAREHOUSE_PATH
@@ -31,13 +34,12 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
-from pathlib import Path
-from typing import Final, Literal, Self
+from typing import Final, Self
 
 # Third-party
 from kds.logs import get_logger
-from kds.settings import Settings
-from pydantic import Field, SecretStr, field_validator, model_validator
+from kds.pipelines import PipelineSettings
+from pydantic import Field, SecretStr, model_validator
 
 ########################################################################
 #                                                                      #
@@ -51,15 +53,11 @@ log = get_logger(__name__)
 #                           Local constants                            #
 #                                                                      #
 ########################################################################
-# log.debug("Types the warehouses dlt can load into")
-Destination = Literal["duckdb", "databricks"]
-# log.debug("Sets the destination that is a single DuckDB file")
-DUCKDB: Final = "duckdb"
 # log.debug("Sets the pattern of a full commit SHA, the only pin accepted")
 COMMIT: Final = re.compile(r"[0-9a-f]{40}")
 # log.debug("Sets the pattern of a repository's name")
 REPOSITORY: Final = re.compile(r"[a-z0-9][a-z0-9-]*")
-# log.debug("Sets the utils commit the shared packages and the price list come from")
+# log.debug("Sets the utils commit the price list is read at")
 UTILS: Final = "97157184471beb28ed129eb52086c36f76ef3e55"
 # log.debug("Pins each app's results to its main after the Nov 8 merges")
 APPS: Final = {
@@ -74,23 +72,9 @@ APPS: Final = {
 #                               Settings                               #
 #                                                                      #
 ########################################################################
-# log.debug("Defines the settings")
-class AppSettings(Settings):
+# log.debug("Defines this project's settings: the shared ones and its own")
+class AppSettings(PipelineSettings):
     """Every setting the loaders, the build and the DAGs read."""
-
-    # log.debug("Holds where dlt loads: duckdb or databricks")
-    warehouse_destination: Destination = DUCKDB
-    # log.debug("Holds the DuckDB file dlt loads and dbt builds in")
-    warehouse_path: Path = Path("data/generated/warehouse.duckdb")
-    # log.debug("Holds where dlt keeps each pipeline's state")
-    warehouse_state: Path = Path("data/generated/dlt")
-
-    # log.debug("Holds the dbt project, which also holds profiles.yml")
-    dbt_project: Path = Path("dbt")
-    # log.debug("Holds the dbt target: dev for DuckDB, prod for Databricks")
-    dbt_target: str = "dev"
-    # log.debug("Holds how many models dbt builds at once")
-    dbt_threads: int = Field(default=4, ge=1, le=16)
 
     # log.debug("Holds GitHub's API, which lists a commit's files")
     github_api: str = "https://api.github.com"
@@ -116,51 +100,20 @@ class AppSettings(Settings):
     # log.debug("Holds each app's pin: its repository's name and commit")
     ai_ops_apps: dict[str, str] = Field(default_factory=lambda: dict(APPS))
 
-    # log.debug("Holds the Unity Catalog catalog every schema lives in")
-    databricks_catalog: str = "kds"
-    # log.debug("Holds the Databricks workspace's host")
-    databricks_host: str | None = None
-    # log.debug("Holds the Databricks SQL warehouse's HTTP path")
-    databricks_http_path: str | None = None
-    # log.debug("Holds the Databricks token, a secret")
-    databricks_token: SecretStr | None = None
-
-    # log.debug("Holds the text encoding of every file read or written")
-    files_encoding: str = "utf-8"
-
-    # log.debug("Defines the host as a name, whichever way it was pasted")
-    @field_validator("databricks_host")
-    @classmethod
-    def _host(cls, host: str | None = None) -> str | None:
-        """Strips a scheme and a trailing slash from the host.
-
-        dbt and dlt take the bare host name; a browser shows https://
-        in front of it.
-
-        Args:
-            host: The host as set, or None.
-
-        Returns:
-            The bare host name, or None.
-        """
-        # log.debug("Returns the host without its scheme or a trailing slash")
-        return host.removeprefix("https://").rstrip("/") if host else host
-
-    # log.debug("Defines the checks across fields")
+    # log.debug("Defines the checks of the pins")
     @model_validator(mode="after")
-    def _check(self) -> Self:
-        """Refuses a pin that can move, or Databricks half set up.
+    def _pins(self) -> Self:
+        """Refuses a pin that can move, or an app that is not a name.
 
         A branch or a short SHA could point somewhere new tomorrow, so
         every pin is a full commit SHA, and every app a repository's
-        name.
+        name. The shared settings refuse Databricks half set up.
 
         Returns:
             The settings, unchanged.
 
         Raises:
-            ValueError: When a pin or a name is malformed, or Databricks
-                is the destination without its host, path and token.
+            ValueError: When a pin or a name is malformed.
         """
         # log.debug("Collects every pin: each app's and each price list's")
         pins = [*self.ai_ops_apps.values(), *self.ai_ops_prices_commits]
@@ -172,12 +125,6 @@ class AppSettings(Settings):
         if not all(REPOSITORY.fullmatch(app) for app in self.ai_ops_apps):
             # log.debug("Raises the bad name's error")
             raise ValueError("every app must be a repository name")
-        # log.debug("Lists what a Databricks load needs")
-        needed = (self.databricks_host, self.databricks_http_path, self.databricks_token)
-        # log.debug("Refuses Databricks without all three")
-        if self.warehouse_destination != DUCKDB and not all(needed):
-            # log.debug("Raises the missing setup's error")
-            raise ValueError("databricks needs DATABRICKS_HOST, _HTTP_PATH and _TOKEN")
         # log.debug("Returns the settings")
         return self
 
