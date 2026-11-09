@@ -11,8 +11,12 @@ The lake bucket and the role GitHub Actions assumes to write to it.
 - The bucket: every public-access switch on, objects owned by the bucket, AES-256 encryption,
   versioning, replaced versions expired after 30 days, and TLS required by its policy.
 - GitHub's OIDC provider (or the account's existing one, with `create_oidc_provider = false`).
-- `data-platform-ci`: trusted for `repo:iamkevinstreet/data-platform:ref:refs/heads/main` only, for an
-  hour at most, allowed to list the bucket and to read and add objects, never to delete them.
+- `data-platform-ci`: trusted for `repo:iamkevinstreet@747156/data-platform@1450000844:ref:refs/heads/main`
+  only, for an hour at most, allowed to list the bucket and to read and add objects, never to delete
+  them. GitHub names the owner and the repository by id as well as by name in the OIDC subject of
+  every repository made after July 15, 2026, so a deleted repository's name cannot be reused to
+  assume the role; a fork sets `github_owner_id` and `github_repository_id` to its own. When AWS
+  refuses a sign-in, the daily workflow prints the claims it offered, never the token.
 
 The first time, from AWS CloudShell, signed in to the account (no key is created or stored).
 Replace `YOUR-LAKE-NAME` with a name of your own, 3 to 55 lowercase letters, numbers and hyphens,

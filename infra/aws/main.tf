@@ -1,6 +1,6 @@
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # The lake bucket and the role GitHub Actions assumes to write to it.
 # The bucket is private, encrypted, versioned and TLS-only; the role has
@@ -25,6 +25,21 @@ locals {
     var.create_oidc_provider
     ? aws_iam_openid_connect_provider.github[0].arn
     : data.aws_iam_openid_connect_provider.github[0].arn
+  )
+
+  # GitHub's OIDC subject names the owner and the repository by name and
+  # by id, so a deleted repository's name cannot be taken over. It is the
+  # default for every repository made after July 15, 2026, this one too.
+  github_owner = split("/", var.github_repository)[0]
+  github_name  = split("/", var.github_repository)[1]
+
+  github_subject = format(
+    "repo:%s@%d/%s@%d:ref:%s",
+    local.github_owner,
+    var.github_owner_id,
+    local.github_name,
+    var.github_repository_id,
+    var.github_ref,
   )
 }
 
@@ -140,7 +155,7 @@ data "aws_iam_policy_document" "ci_trust" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repository}:ref:${var.github_ref}"]
+      values   = [local.github_subject]
     }
   }
 }

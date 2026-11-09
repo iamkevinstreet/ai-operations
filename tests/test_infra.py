@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Tests the Terraform without a cloud account: every file parses, every
 provider is pinned to a range, the bucket can never be public, the CI
@@ -177,8 +177,13 @@ def test_the_ci_role_trusts_one_branch_and_cannot_delete() -> None:
     blocks = _root("aws")
     # log.debug("Serializes the policy documents to search them")
     documents = json.dumps(blocks["data"])
-    # log.debug("Checks the subject names the repository and the ref")
-    assert "repo:${var.github_repository}:ref:${var.github_ref}" in documents
+    # log.debug("Serializes the locals, where the trusted subject is built")
+    built = json.dumps(blocks["locals"])
+    # log.debug("Checks the role trusts one subject: owner and repository by name and id, one ref")
+    assert ("${local.github_subject}" in documents, "repo:%s@%d/%s@%d:ref:%s" in built) == (
+        True,
+        True,
+    )
     # log.debug("Checks no statement grants a delete or every action")
     assert ("s3:Delete" not in documents, '"s3:*"' in documents) == (True, True)
     # log.debug("Checks the one s3:* is the TLS deny")
