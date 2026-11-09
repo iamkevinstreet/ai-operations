@@ -2,6 +2,17 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+
+- **Dependency updates land by themselves.** Dependabot groups each week's updates into one pull
+  request per kind (Actions, Python), and the `dependency-updates` workflow lands them every
+  weekday: it applies the oldest open one to `main` as an ordinary commit, refreshes the dates in the
+  headers it changes, runs the whole of CI on that commit, and moves `main` to it only when every
+  check passes. One whose checks fail is labelled "needs a person" and waits; one that changes a
+  workflow waits for the `DEPENDENCY_UPDATES_TOKEN` secret.
+
 ## v0.2.0 (Nov 9, 2026)
 
 Renamed from data-platform: this repository is now the AI operations project, one use case among
