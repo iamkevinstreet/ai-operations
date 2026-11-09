@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Reads the apps' committed files at pinned commits: the listing from
 GitHub's git trees API, each file from raw.githubusercontent.com.
@@ -54,7 +54,7 @@ log = get_logger(__name__)
 API_HEADERS: Final = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "data-platform",
+    "User-Agent": "ai-operations",
 }
 # log.debug("Sets the one header a raw file's request sends")
 AGENT: Final = {"User-Agent": API_HEADERS["User-Agent"]}

@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 The raw tables' contract: one model per table, which dlt also reads
 for the tables' columns, so a column that is empty in every row still
@@ -337,28 +337,5 @@ class PriceRow(BaseModel):
     prices_as_of: date
     # log.debug("Holds the commit the file was read at")
     source_commit: str
-    # log.debug("Holds when the load that wrote the row started")
-    loaded_at: datetime
-
-
-# log.debug("Defines one count of the EEOC's national charge receipts")
-class ReceiptRow(BaseModel):
-    """Charges the EEOC received in one fiscal year citing one basis."""
-
-    # log.debug("Freezes the row and refuses any field it does not name")
-    model_config = STRICT
-
-    # log.debug("Holds the EEOC's name for the table, E1a")
-    table_id: str
-    # log.debug("Holds the basis or statute, as the EEOC labels it")
-    basis: str
-    # log.debug("Holds the federal fiscal year, October to September")
-    fiscal_year: int
-    # log.debug("Holds how many charges cited the basis that year")
-    receipts: int
-    # log.debug("Holds where the file came from")
-    source_url: str
-    # log.debug("Holds the SHA-256 of the file, so a revision shows")
-    source_sha256: str
     # log.debug("Holds when the load that wrote the row started")
     loaded_at: datetime

@@ -5,12 +5,13 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # Runs on every push and pull request: the secrets scan, lint, types,
 # the code standard, the offline tests and the audit; the DAG tests;
-# the real loads and the dbt build on DuckDB; Terraform's format and
-# validation; and the Compose file's.
+# the real load and the dbt build on DuckDB; and the Compose file's
+# validation. The Terraform for where this runs is checked in
+# data-platform-aws-databricks.
 
 name: ci
 
@@ -128,13 +129,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      # The table is read by its shape. It read the EEOC's real file on Nov 8
-      # (338 rows, FY1997 to FY2025); until its figures are checked against the
-      # EEOC's published totals, a failure here is reported without failing the build.
-      - name: Load the EEOC's national charge receipts
-        run: make load-eeoc-stats
-        continue-on-error: true
-
       - name: Build and test every model on DuckDB
         run: make build
 
@@ -148,30 +142,6 @@ jobs:
             data/generated/warehouse.duckdb
             dbt/target/static_index.html
           retention-days: 14
-
-  infra:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-        with:
-          ref: ${{ inputs.ref }}
-          persist-credentials: false
-
-      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e  # v4.0.1
-        with:
-          terraform_version: "1.x"
-          terraform_wrapper: false
-
-      - name: Format
-        run: terraform fmt -check -recursive -diff infra
-
-      - name: Validate each root against its providers' schemas, with no state
-        run: |
-          for root in infra/aws infra/databricks; do
-            terraform -chdir="${root}" init -backend=false -input=false
-            terraform -chdir="${root}" validate
-          done
 
   compose:
     runs-on: ubuntu-latest

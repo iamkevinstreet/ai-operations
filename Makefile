@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # One command for each routine task: install, load, build, docs, check,
 # test, the DAGs end to end, audit and the local Airflow. CI runs the
@@ -34,7 +34,7 @@ AIRFLOW_ENV := AIRFLOW_HOME=$(CURDIR)/data/generated/airflow AIRFLOW__CORE__LOAD
 #                            Routine tasks                             #
 #                                                                      #
 ########################################################################
-.PHONY: install install-airflow load load-eeoc-stats build freshness docs check test \
+.PHONY: install install-airflow load build freshness docs check test \
 	dags-test audit up
 
 install:  ## The loaders, dbt and the checks, from uv.lock
@@ -45,9 +45,6 @@ install-airflow:  ## The same, plus Airflow, for the DAG tests and dags-test
 
 load:  ## The apps' results at their pins, and the price list, into raw_ai_ops
 	$(PIPELINES) load ai-ops
-
-load-eeoc-stats:  ## The EEOC's national charge receipts into raw_eeoc_stats
-	$(PIPELINES) load eeoc-stats
 
 build:  ## Every seed, model, contract, unit test and data test, in dependency order
 	$(PIPELINES) dbt build

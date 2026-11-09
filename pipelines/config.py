@@ -67,12 +67,6 @@ APPS: Final = {
     "intake-conflicts-agent": "97d4c52ab7495d2f47491ee7c65cc93cb7ca95b9",
     "eeoc-charge-intake": "bae5b7c9f588a334fad3280e171a8052b2220c03",
 }
-# log.debug("Sets where the EEOC publishes its charge receipts by basis")
-EEOC_RECEIPTS: Final = (
-    "https://www.eeoc.gov/sites/default/files/2026-04/"
-    "Table_E1a._Charge_Receipts_by_Basis_or_Statute_%28All_Statutes%29"
-    "_FY_1997_-_FY_2025_0.xlsx"
-)
 
 
 ########################################################################
@@ -121,13 +115,6 @@ class AppSettings(Settings):
     ai_ops_prices_commits: list[str] = Field(default_factory=lambda: [UTILS])
     # log.debug("Holds each app's pin: its repository's name and commit")
     ai_ops_apps: dict[str, str] = Field(default_factory=lambda: dict(APPS))
-
-    # log.debug("Holds the schema the EEOC's statistics load into")
-    eeoc_stats_dataset: str = "raw_eeoc_stats"
-    # log.debug("Holds where the EEOC publishes its receipts table")
-    eeoc_stats_url: str = EEOC_RECEIPTS
-    # log.debug("Holds how long the table's download may take")
-    eeoc_stats_timeout_s: float = Field(default=60.0, gt=0)
 
     # log.debug("Holds the Unity Catalog catalog every schema lives in")
     databricks_catalog: str = "kds"

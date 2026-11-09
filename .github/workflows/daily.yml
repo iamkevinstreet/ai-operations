@@ -10,7 +10,8 @@
 # Runs the DAGs every day through Airflow itself, with `airflow dags
 # test`, so there is no Airflow server to pay for: the loads, then the
 # build, on DuckDB. Once the AWS_REGION variable is set, a run on main
-# copies the warehouse and its docs to the lake bucket through GitHub's
+# copies the warehouse and its docs under ai-operations/ in the lake
+# bucket that data-platform-aws-databricks provisions, through GitHub's
 # OIDC token, since the role trusts main only; once DATABRICKS_CATALOG
 # is set, the same loads and models run there too, from any branch run
 # by hand. Whatever names an account (the role, the bucket, the
@@ -95,15 +96,16 @@ jobs:
           claims = json.loads(base64.urlsafe_b64decode(part + "=" * (-len(part) % 4)))
           print({key: claims[key] for key in ("sub", "aud", "ref")})'
 
-      - name: Copy the warehouse and its docs to the lake, by date
+      - name: Copy the warehouse and its docs to the lake, under this project's prefix, by date
         if: vars.AWS_REGION != '' && github.ref == 'refs/heads/main'
         env:
           BUCKET: ${{ secrets.LAKE_BUCKET }}
         run: |
           day="$(date -u +%Y-%m-%d)"
           aws s3 cp data/generated/warehouse.duckdb \
-            "s3://${BUCKET}/warehouse/${day}/warehouse.duckdb"
-          aws s3 cp dbt/target/static_index.html "s3://${BUCKET}/docs/${day}/index.html"
+            "s3://${BUCKET}/ai-operations/warehouse/${day}/warehouse.duckdb"
+          aws s3 cp dbt/target/static_index.html \
+            "s3://${BUCKET}/ai-operations/docs/${day}/index.html"
 
   databricks:
     if: vars.DATABRICKS_CATALOG != ''

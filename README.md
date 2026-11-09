@@ -1,28 +1,44 @@
-# Data platform
+# AI operations
 
-[![ci](https://github.com/iamkevinstreet/data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/iamkevinstreet/data-platform/actions/workflows/ci.yml)
-[![codeql](https://github.com/iamkevinstreet/data-platform/actions/workflows/codeql.yml/badge.svg)](https://github.com/iamkevinstreet/data-platform/actions/workflows/codeql.yml)
+[![ci](https://github.com/iamkevinstreet/ai-operations/actions/workflows/ci.yml/badge.svg)](https://github.com/iamkevinstreet/ai-operations/actions/workflows/ci.yml)
+[![codeql](https://github.com/iamkevinstreet/ai-operations/actions/workflows/codeql.yml/badge.svg)](https://github.com/iamkevinstreet/ai-operations/actions/workflows/codeql.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-The warehouse behind three AI projects: dlt loads what each app commits, dbt models it into marts
-with enforced contracts, Airflow 3 schedules the loads and the build, and Terraform holds the AWS and
-Databricks pieces. The same models build in DuckDB on a laptop and in CI, and in Databricks in
-production. For businesses that run AI in production and need to know what it costs, how often it
-is right, and where its time goes, from data they can check.
+What every AI app costs, how often it is right, and where its time goes, from data anyone can
+check. dlt loads what each app commits, dbt models it into marts with enforced contracts, and
+Airflow 3 schedules the load and the build. The same models build in DuckDB on a laptop and in CI,
+and in Databricks in production, on [data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks),
+which provisions where it runs. For businesses that run AI in production.
 
 The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 [intake conflicts agent](https://github.com/iamkevinstreet/intake-conflicts-agent) and
 [EEOC charge intake](https://github.com/iamkevinstreet/eeoc-charge-intake).
 
+## In the blueprint
+
+Every project follows the same seven layers. This one reads the other projects' published data, so
+it is the cross-project one, and it measures the AI rather than holding any.
+
+| Layer | Here |
+| --- | --- |
+| Sources | Each app's committed run files and traces, and the workbench's price list, at pinned commits |
+| Ingestion | dlt, merging on natural keys, under a Pydantic contract per raw table |
+| Storage | `raw_ai_ops` in DuckDB or Databricks; a dated copy of the warehouse in the S3 lake |
+| Modeling | Staging and intermediate views, then the `ai_ops` marts, with prices kept as type 2 history |
+| Serving | The marts, and the dbt docs site with its lineage graph |
+| Intelligence | None: it measures the apps' models |
+| Product | Not yet: the dashboards and the site's figures will read the marts |
+
 ## Status
 
 | | |
 | --- | --- |
-| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The three DAGs run through Airflow 3.4 itself with `airflow dags test`. The EEOC's national charge receipts load from the EEOC's real XLSX: 338 rows over FY1997 to FY2025, first read in CI on Nov 8, not yet checked against the EEOC's published totals. 34 offline tests, strict types and the code standard |
+| Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The two DAGs run through Airflow 3.4 itself with `airflow dags test`. 27 offline tests, strict types and the code standard |
 | Works on Databricks | The same load and build on the Databricks Free Edition's serverless 2X-Small SQL warehouse, from the daily workflow: all 128 models, seeds and tests pass, the reconciliation and the price check among them. On Nov 8 the load took 40 s with the warehouse warm (1 min 44 s from cold) and the build 68 s |
 | Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below), on DuckDB and on Databricks alike |
-| Written, not yet run | The S3 copy in the daily workflow, which runs from main only, where the AWS role is trusted; the Databricks Terraform root, which is optional, since dlt and dbt make their own schemas; and the Compose file's Airflow image, which needs Docker. CI validates both Terraform roots against the providers' schemas |
-| Next | The EEOC charge warehouse: reviews saved in Postgres by the app, exported as JSON under a versioned contract, loaded and modelled into charges, field reviews and type 2 respondents |
+| Works on AWS | The daily run on main copies the warehouse and its docs to the lake bucket, by date, through an IAM role it assumes with GitHub's OIDC token; first on Nov 9 |
+| Written, not yet run | The Compose file's Airflow image, which needs Docker |
+| Next | A semantic layer that defines the marts' measures once (the share judged right, the judge's agreement, cost per run); telling the LLM judge's calls apart from the answers' before cost per answer counts Grounded's judged runs; the pins moved to the apps' current mains |
 
 ## Quick start
 
@@ -33,7 +49,7 @@ make install   # the locked environment
 make load      # every app's results at its pin, from GitHub, into data/generated/warehouse.duckdb
 make build     # every seed, model, contract and test
 make docs      # the dbt docs site with its lineage graph, in dbt/target/static_index.html
-make test      # 34 tests, offline, on fixtures
+make test      # 27 tests, offline, on fixtures
 ```
 
 To run the DAGs through Airflow, `make install-airflow` then `make dags-test`. To run Airflow's web
@@ -48,21 +64,17 @@ flowchart LR
         I[Intake agent results and traces]
         E[EEOC results and traces]
         P[Workbench price list]
-        X[EEOC national statistics, XLSX]
     end
     subgraph load [dlt]
         L1[load ai-ops]
-        L2[load eeoc-stats]
     end
     subgraph warehouse [DuckDB in dev and CI, Databricks in prod]
         R[(raw_ai_ops)]
-        R2[(raw_eeoc_stats)]
         S[staging views]
         N[intermediate views]
         M[(ai_ops marts)]
     end
     G & I & E & P --> L1 --> R
-    X --> L2 --> R2
     R --> S --> N --> M
 ```
 
@@ -84,8 +96,8 @@ flowchart LR
 5. **Reconcile.** `fct_run_metrics` rebuilds every figure an app published in a run's summary
    (means, sums, ratios and nearest-rank percentiles) from the case rows, beside the published value.
    The build fails if any pair differs by more than the figure's rounding.
-6. **Schedule.** Two DAGs load, each updating an Airflow asset; the build DAG is scheduled on either
-   asset, not on a clock. Every task runs the same `python -m pipelines` command a person would.
+6. **Schedule.** One DAG loads, updating an Airflow asset; the build DAG is scheduled on the asset,
+   not on a clock. Every task runs the same `python -m pipelines` command a person would.
 
 ## Results
 
@@ -122,7 +134,8 @@ the retrieval mode is a question of quality, not time.
 
 Every model here is `claude-sonnet-5-5`. "Judged right" is each app's own measure, averaged over
 its cases: `field_accuracy` (EEOC), `correct` (Grounded), and the verdict shown to the approver
-matching the expected one (intake). The Nov 7 runs are on the apps' publish branches; the pins move to main when they merge.
+matching the expected one (intake). The pins have since moved to each app's main after the Nov 8
+merges, which hold the same runs.
 
 ## The marts
 
@@ -157,9 +170,11 @@ matching the expected one (intake). The Nov 7 runs are on the apps' publish bran
   `airflow dags test`, so there is no Airflow server to pay for.
 - **Pins, not branches.** Results are read at full commit SHAs, so a load is repeatable and its
   rows can be traced to a commit and a git blob.
-- **Keys, not passwords.** GitHub Actions reaches AWS through an IAM role that trusts one
-  repository's main branch, through GitHub's OIDC token, for an hour at most, and can list, read and
-  add objects in one bucket, never delete them.
+- **Keys, not passwords.** GitHub Actions reaches AWS through an IAM role that trusts this
+  repository's main branch, by name and id, through GitHub's OIDC token, for an hour at most, and can
+  list, read and add objects in one bucket, never delete them. The role and the bucket are
+  provisioned in data-platform-aws-databricks, apart from the project, so the next project deploys
+  onto the same platform without copying it.
 - **No MinIO.** MinIO stopped publishing its community images in late 2025, so files to load stay in
   a folder locally; the loaders read S3 in CI and production.
 
@@ -172,18 +187,17 @@ equal to the defaults in [`pipelines/config.py`](pipelines/config.py). Secrets g
 
 ## Testing
 
-`make test` runs 34 tests with no network:
+`make test` runs 27 tests with no network:
 
 - the parsing of each format, on the apps' real Nov 7 results cut to a few cases (`tests/fixtures/`),
   each summary recomputed by the app's own summary code so the cut set still reconciles;
 - the load end to end into a DuckDB file of the test's own, a second load changing nothing, no text
   column, and `dbt build` passing on what was loaded;
-- the EEOC table's reader on a workbook built in the EEOC's layout;
-- the GitHub reader, the settings, the DAGs as Airflow parses them, the Terraform and the Compose
-  file.
+- the GitHub reader, the settings, the DAGs as Airflow parses them, and the Compose file and the
+  Dockerfile's pinned bases.
 
 `make check` runs ruff, strict mypy and the code standard. CI also loads the real results, builds on
-them, validates the Terraform and the Compose file, and scans the whole history for secrets.
+them, validates the Compose file, and scans the whole history for secrets.
 
 ## Project layout
 
@@ -192,11 +206,13 @@ them, validates the Terraform and the Compose file, and scans the whole history 
 | `pipelines/` | The dlt sources, the raw contract, and `python -m pipelines`, which the DAGs run |
 | `dbt/` | The dbt project: staging, intermediate and `ai_ops` models, seeds, macros and tests |
 | `dags/` | The Airflow 3 DAGs ([`dags/README.md`](dags/README.md)) |
-| `infra/` | Terraform for AWS and Databricks ([`infra/README.md`](infra/README.md)) |
 | `config/` | Every setting and the secrets template ([`config/README.md`](config/README.md)) |
 | `tests/` | The tests and their fixtures |
 | `data/` | Only `generated/`, ignored: the warehouse, dlt's state, Airflow's home ([`data/README.md`](data/README.md)) |
 | `compose.yaml`, `Dockerfile` | Airflow and its Postgres on this machine |
+
+Where it runs, the lake bucket, the role and the Unity Catalog setup, is
+[data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks).
 
 ## Changelog and license
 

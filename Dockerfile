@@ -5,11 +5,11 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # Airflow 3 with uv and the project's locked environment, for local
 # runs through compose.yaml. The repository is mounted at
-# /opt/data-platform, so the DAGs and models are the working copy's;
+# /opt/ai-operations, so the DAGs and models are the working copy's;
 # the packages are the lockfile's, installed once at build.
 
 FROM apache/airflow:3.4.0-python3.12
@@ -30,6 +30,6 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_PYTHON_DOWNLOADS=never \
     PATH=/opt/venv/bin:$PATH
 
-WORKDIR /opt/data-platform
+WORKDIR /opt/ai-operations
 COPY --chown=airflow:root pyproject.toml uv.lock ./
 RUN uv sync --locked --no-install-project --no-dev --group airflow

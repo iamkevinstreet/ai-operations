@@ -5,17 +5,17 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # The one dbt project: staging views over the raw tables dlt loads,
 # intermediate views that line the apps' formats up, and a published
 # mart per domain, each a table with an enforced contract. The same
 # models build in DuckDB (dev, CI) and Databricks (prod).
 
-name: data_platform
+name: ai_operations
 version: "0.1.0"
 config-version: 2
-profile: data_platform
+profile: ai_operations
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
@@ -30,7 +30,7 @@ flags:
   version_check: false
 
 models:
-  data_platform:
+  ai_operations:
     # One view per raw table: renamed, cast, nothing joined.
     staging:
       +schema: staging
@@ -49,9 +49,9 @@ models:
         enforced: true
 
 seeds:
-  data_platform:
+  ai_operations:
     +schema: reference
 
 data_tests:
-  data_platform:
+  ai_operations:
     +severity: error

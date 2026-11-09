@@ -32,8 +32,6 @@ variables from these settings before it starts dbt, and `dbt/profiles.yml` reads
 | `[ai_ops] prices_repo`, `prices_path` | `utils`, `llm/kds/llm/pricing.json` | Where the workbench's price list is |
 | `[ai_ops] prices_commits` | utils v0.6.1 | Every utils commit that holds a version of the price list |
 | `[ai_ops.apps]` | each app's main after the Nov 8 merges | Each app's repository and the full commit SHA its results are read at |
-| `[eeoc_stats] dataset` | `raw_eeoc_stats` | The schema the EEOC's statistics load into |
-| `[eeoc_stats] url`, `timeout_s` | Table E1a, `60.0` | Where the EEOC publishes the receipts table, and how long the download may take |
 | `[databricks] catalog` | `kds` | The Unity Catalog catalog every schema lives in |
 | `[files] encoding` | `utf-8` | Every file read or written |
 | `[log] dir`, `level` | `logs`, `INFO` | Where `kds.logs` writes one JSON line per event, and from what level |

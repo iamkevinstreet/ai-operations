@@ -6,9 +6,9 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
-Builds the warehouse whenever a raw schema changes: first a freshness
+Builds the warehouse whenever the raw schema changes: first a freshness
 check on the raw tables, then `dbt build`, which runs every model,
 contract, unit test and data test in dependency order and stops a
 model's children when it fails, then the docs site with its lineage.
@@ -29,7 +29,7 @@ from airflow.sdk import DAG
 from kds.logs import get_logger
 
 # Local
-from defaults import DAG_DEFAULTS, RAW_AI_OPS, RAW_EEOC_STATS, pipelines_task
+from defaults import DAG_DEFAULTS, RAW_AI_OPS, pipelines_task
 
 ########################################################################
 #                                                                      #
@@ -51,10 +51,10 @@ BUILD: Final = "build"
 #                                 DAG                                  #
 #                                                                      #
 ########################################################################
-# log.debug("Defines the build, run by either raw schema's update")
+# log.debug("Defines the build, run by the raw schema's update")
 with DAG(
     dag_id="build_warehouse",
-    schedule=RAW_AI_OPS | RAW_EEOC_STATS,
+    schedule=RAW_AI_OPS,
     tags=["dbt", BUILD],
     doc_md=__doc__,
     **DAG_DEFAULTS,

@@ -1,14 +1,13 @@
 # dags
 
-Three Airflow 3 DAGs. Every task runs one command in the project's locked environment,
+Two Airflow 3 DAGs. Every task runs one command in the project's locked environment,
 `uv run --no-sync python -m pipelines ...`, at the repository root, so a DAG holds no logic of its
 own and the same command runs from a laptop, CI or a hosted Airflow.
 
 | DAG | Schedule | Tasks |
 | --- | --- | --- |
 | `load_ai_ops` | Daily, 06:17 UTC | `load_results`: the apps' results at their pins and the price list; updates the `raw_ai_ops` asset |
-| `load_eeoc_stats` | The 3rd of each month, 07:43 UTC | `load_receipts`: the EEOC's receipts table; updates the `raw_eeoc_stats` asset |
-| `build_warehouse` | When either asset is updated | `freshness`, then `build` (`dbt build`), then `docs` |
+| `build_warehouse` | When the asset is updated | `freshness`, then `build` (`dbt build`), then `docs` |
 
 Every task retries twice with backoff and has a 30-minute limit; every DAG runs one at a time and
 never backfills. [`defaults.py`](defaults.py) holds what they share, and `.airflowignore` keeps

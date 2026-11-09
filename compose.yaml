@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # Airflow 3 on this machine, with Postgres for its metadata:
 #   docker compose --env-file config/.env up --build
@@ -36,15 +36,15 @@ services:
     environment:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:\
         ${POSTGRES_PASSWORD}@postgres/airflow"
-      AIRFLOW__CORE__DAGS_FOLDER: /opt/data-platform/dags
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/ai-operations/dags
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      DATA_PLATFORM_HOME: /opt/data-platform
-      PYTHONPATH: /opt/data-platform/dags
+      AI_OPERATIONS_HOME: /opt/ai-operations
+      PYTHONPATH: /opt/ai-operations/dags
       RUNTIME__DLTHUB_TELEMETRY: "false"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - .:/opt/data-platform
+      - .:/opt/ai-operations
 
 volumes:
   postgres: {}

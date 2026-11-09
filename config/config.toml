@@ -48,12 +48,6 @@ grounded-qa = "5226cbf61bcdf74eb6794e5266d38fc8c1c453de"
 intake-conflicts-agent = "97d4c52ab7495d2f47491ee7c65cc93cb7ca95b9"
 eeoc-charge-intake = "bae5b7c9f588a334fad3280e171a8052b2220c03"
 
-[eeoc_stats]
-dataset = "raw_eeoc_stats"                # the schema the EEOC's statistics load into
-# Charge receipts by basis, FY 1997 to FY 2025, as the EEOC published it in April 2026.
-url = "https://www.eeoc.gov/sites/default/files/2026-04/Table_E1a._Charge_Receipts_by_Basis_or_Statute_%28All_Statutes%29_FY_1997_-_FY_2025_0.xlsx"
-timeout_s = 60.0                          # how long the download may take
-
 [databricks]
 catalog = "kds"                           # the Unity Catalog catalog every schema lives in
 

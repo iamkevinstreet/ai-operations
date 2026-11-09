@@ -6,7 +6,7 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 What every DAG shares: retries, a timeout, one run at a time, and the
 one command every task runs, `python -m pipelines`, in the project's
@@ -14,8 +14,8 @@ own environment. Airflow only schedules and retries: the loaders and
 dbt never run inside the scheduler, so the two never share packages,
 and the same command runs from a laptop, CI or a hosted Airflow.
 
-The assets name what each load writes, so the warehouse build runs
-when either raw schema changes, not on a clock of its own.
+The asset names what the load writes, so the warehouse build runs
+when the raw schema changes, not on a clock of its own.
 """
 
 ########################################################################
@@ -50,14 +50,14 @@ log = get_logger(__name__)
 #                                                                      #
 ########################################################################
 # log.debug("Sets where the project is: the environment's say, else this folder's parent")
-REPO: Final = os.environ.get("DATA_PLATFORM_HOME", str(Path(__file__).resolve().parents[1]))
+REPO: Final = os.environ.get("AI_OPERATIONS_HOME", str(Path(__file__).resolve().parents[1]))
 # log.debug("Sets the command every task runs, in the project's locked environment")
 PIPELINES: Final = "uv run --no-sync python -m pipelines"
 # log.debug("Sets the day the schedules start counting from")
 START: Final = datetime(2026, 11, 1, tzinfo=UTC)
 # log.debug("Sets what every task inherits: retries with backoff and a time limit")
 TASK_DEFAULTS: Final[dict[str, Any]] = {
-    "owner": "data-platform",
+    "owner": "ai-operations",
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "retry_exponential_backoff": True,
@@ -72,8 +72,6 @@ DAG_DEFAULTS: Final[dict[str, Any]] = {
 }
 # log.debug("Names the raw schema the apps' results load into")
 RAW_AI_OPS: Final = Asset(name="raw_ai_ops", group="warehouse")
-# log.debug("Names the raw schema the EEOC's statistics load into")
-RAW_EEOC_STATS: Final = Asset(name="raw_eeoc_stats", group="warehouse")
 
 
 ########################################################################

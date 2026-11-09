@@ -2,6 +2,32 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
+## v0.2.0 (Nov 9, 2026)
+
+Renamed from data-platform: this repository is now the AI operations project, one use case among
+the projects, and the platform it runs on is a repository of its own.
+
+### Changed
+
+- The project is `ai-operations`, the dbt project and profile `ai_operations`, and the local
+  Airflow's folder `/opt/ai-operations`, read from `AI_OPERATIONS_HOME`.
+- The daily copy to the lake writes under `ai-operations/`, so each project deploying onto the
+  platform keeps to its own prefix.
+
+### Moved
+
+- The Terraform for AWS and Databricks and the bootstrap, with their tests, to
+  [data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks),
+  whose CI role trusts this repository by name and id. The Compose and Dockerfile tests stay here,
+  in `tests/test_compose.py`.
+- The EEOC's national charge receipts loader, its DAG and its tests, out of this project: they
+  belong to the EEOC charge warehouse, in eeoc-charge-intake, and are restored there from this
+  repository's history at 8c6b715.
+
+### Tests
+
+- 27 offline tests; openpyxl and python-hcl2 are no longer dependencies.
+
 ## v0.1.0 (Nov 8, 2026)
 
 The first release: the AI operations load and mart, the schedules and the infrastructure.

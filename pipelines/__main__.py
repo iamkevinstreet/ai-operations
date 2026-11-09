@@ -6,12 +6,11 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 The one command the Makefile, CI and the Airflow DAGs run:
 
     python -m pipelines load ai-ops       the apps' results and prices
-    python -m pipelines load eeoc-stats   the EEOC's national receipts
     python -m pipelines dbt build         any dbt command, such as build
 
 Every load reads its pins and its destination from config/config.toml,
@@ -38,7 +37,6 @@ from kds.logs import get_logger, setup_logging
 # Local
 from pipelines.ai_ops import ai_ops
 from pipelines.config import AppSettings, get_app_settings
-from pipelines.eeoc_stats import eeoc_stats
 from pipelines.github import GitHubReader
 from pipelines.transform import run_dbt
 from pipelines.warehouse import load
@@ -57,8 +55,6 @@ log = get_logger(__name__)
 ########################################################################
 # log.debug("Sets the pipeline name of the apps' results")
 AI_OPS: Final = "ai-ops"
-# log.debug("Sets the pipeline name of the EEOC's statistics")
-EEOC_STATS: Final = "eeoc-stats"
 # log.debug("Sets the subcommand that runs a load")
 LOAD: Final = "load"
 # log.debug("Sets what the command does, for its help")
@@ -92,21 +88,6 @@ def load_ai_ops(settings: AppSettings | None = None) -> None:
     load(settings, name=AI_OPS, dataset=settings.ai_ops_dataset, source=source)
 
 
-# log.debug("Defines the load of the EEOC's statistics")
-def load_eeoc_stats(settings: AppSettings | None = None) -> None:
-    """Loads the EEOC's national charge receipts by basis.
-
-    Args:
-        settings: The file's address and the warehouse. Required.
-    """
-    # log.debug("Takes the settings, which the caller must give")
-    settings = required(settings=settings)
-    # log.debug("Builds the source, stamped with this load's time")
-    source = eeoc_stats(settings, loaded_at=datetime.now(UTC))
-    # log.debug("Loads it")
-    load(settings, name=EEOC_STATS, dataset=settings.eeoc_stats_dataset, source=source)
-
-
 # log.debug("Defines the command line")
 def main(argv: Sequence[str] | None = None) -> int:
     """Runs one load or one dbt command.
@@ -120,7 +101,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     # log.debug("Lists every load by its name on the command line")
     loads: dict[str, Callable[[AppSettings], None]] = {
         AI_OPS: load_ai_ops,
-        EEOC_STATS: load_eeoc_stats,
     }
     # log.debug("Describes the command")
     parser = argparse.ArgumentParser(prog="pipelines", description=ABOUT)

@@ -2,7 +2,7 @@
 -- listagg ignores its order on Spark and Databricks, so each adapter
 -- gets the form it sorts with.
 {% macro sorted_list(column) -%}
-    {{ return(adapter.dispatch('sorted_list', 'data_platform')(column)) }}
+    {{ return(adapter.dispatch('sorted_list', 'ai_operations')(column)) }}
 {%- endmacro %}
 
 {% macro default__sorted_list(column) -%}

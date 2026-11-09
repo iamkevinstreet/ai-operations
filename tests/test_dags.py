@@ -6,13 +6,13 @@
 """
 Author:            Kevin Street
 Created on:        2026-11-08
-Last modified on:  2026-11-08
+Last modified on:  2026-11-09
 
 Tests the Airflow DAGs as Airflow parses them: every file imports, each
 DAG retries, never backfills and runs one at a time, every task runs
-the project's own command at the repository, the loads update the raw
-assets, and the build waits for either of them. Needs the airflow
-group (`uv sync --group airflow`); without it these tests are skipped.
+the project's own command at the repository, the load updates the raw
+asset, and the build waits for it. Needs the airflow group
+(`uv sync --group airflow`); without it these tests are skipped.
 """
 
 ########################################################################
@@ -85,15 +85,15 @@ def dags(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
     return dict(bag.dags)
 
 
-# log.debug("Defines the test of the three DAGs")
-def test_the_folder_holds_the_two_loads_and_the_build(dags: dict[str, Any]) -> None:
-    """Two loads, one build; the shared defaults file is not a DAG.
+# log.debug("Defines the test of the two DAGs")
+def test_the_folder_holds_the_load_and_the_build(dags: dict[str, Any]) -> None:
+    """One load, one build; the shared defaults file is not a DAG.
 
     Args:
         dags: The parsed DAGs.
     """
     # log.debug("Checks the ids")
-    assert set(dags) == {"load_ai_ops", "load_eeoc_stats", "build_warehouse"}
+    assert set(dags) == {"load_ai_ops", "build_warehouse"}
 
 
 # log.debug("Defines the test of every DAG's safety settings")
@@ -124,19 +124,16 @@ def test_every_task_runs_the_projects_command_at_the_repository(dags: dict[str, 
     assert all(t.bash_command.startswith(COMMAND) and t.cwd == str(REPO) for t in tasks)
 
 
-# log.debug("Defines the test of the assets")
-def test_the_build_waits_for_either_load(dags: dict[str, Any]) -> None:
-    """Each load updates its raw asset; the build is scheduled on both.
+# log.debug("Defines the test of the asset")
+def test_the_build_waits_for_the_load(dags: dict[str, Any]) -> None:
+    """The load updates its raw asset; the build is scheduled on it.
 
     Args:
         dags: The parsed DAGs.
     """
-    # log.debug("Reads each load's outlets")
-    outlets = {
-        dag_id: [o.name for t in dags[dag_id].tasks for o in t.outlets]
-        for dag_id in ("load_ai_ops", "load_eeoc_stats")
-    }
+    # log.debug("Reads the load's outlets")
+    outlets = [o.name for t in dags["load_ai_ops"].tasks for o in t.outlets]
     # log.debug("Checks them")
-    assert outlets == {"load_ai_ops": ["raw_ai_ops"], "load_eeoc_stats": ["raw_eeoc_stats"]}
+    assert outlets == ["raw_ai_ops"]
     # log.debug("Checks the build is scheduled by assets, not a clock")
     assert type(dags["build_warehouse"].timetable).__name__ == "AssetTriggeredTimetable"

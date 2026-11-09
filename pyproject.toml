@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-08
+# Last modified on:  2026-11-09
 #
 # Packages the loaders and the build command, and sets ruff, mypy and
 # pytest to the code standard. Airflow and the Databricks adapters are
@@ -14,9 +14,9 @@
 # where it runs.
 
 [project]
-name = "data-platform"
-version = "0.1.0"
-description = "The warehouse behind the AI projects: dlt loads, dbt models, Airflow schedules."
+name = "ai-operations"
+version = "0.2.0"
+description = "Cost, quality and speed across every AI app: dlt loads, dbt models, Airflow schedules."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
@@ -29,7 +29,6 @@ dependencies = [
   "dlt[duckdb]==1.32.0",
   "dbt-core==1.12.6",
   "dbt-duckdb==1.11.1",
-  "openpyxl>=3.1",
 ]
 
 [project.scripts]
@@ -40,9 +39,7 @@ dev = [
   "mypy>=1.13",
   "pip-audit>=2.7",
   "pytest>=8.3",
-  "python-hcl2>=7",
   "ruff==0.17.3",
-  "types-openpyxl>=3.1",
   "types-PyYAML>=6.0",
   "types-requests>=2.32",
   "kds-standards>=0.6.0,<0.7",
@@ -112,5 +109,5 @@ mypy_path = ["tests", "dags"]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = ["dlt", "dlt.*", "dbt", "dbt.*", "hcl2", "airflow", "airflow.*"]
+module = ["dlt", "dlt.*", "dbt", "dbt.*", "airflow", "airflow.*"]
 ignore_missing_imports = true
