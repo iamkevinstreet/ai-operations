@@ -12,3 +12,7 @@
 {% macro databricks__sorted_list(column) -%}
     array_join(array_sort(collect_list({{ column }})), ', ')
 {%- endmacro %}
+
+{% macro snowflake__sorted_list(column) -%}
+    listagg({{ column }}, ', ') within group (order by {{ column }})
+{%- endmacro %}

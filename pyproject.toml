@@ -5,27 +5,27 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-09
+# Last modified on:  2026-11-10
 #
 # Packages the loaders and the build command, and sets ruff, mypy and
-# pytest to the code standard. Airflow and the Databricks adapters are
-# dependency groups of their own: the DAGs only start commands, so the
-# scheduler never imports the loaders, and CI installs each group only
-# where it runs.
+# pytest to the code standard. Airflow and the Databricks and Snowflake
+# adapters are dependency groups of their own: the DAGs only start
+# commands, so the scheduler never imports the loaders, and CI installs
+# each group only where it runs.
 
 [project]
 name = "ai-operations"
-version = "0.3.0"
+version = "0.4.0"
 description = "Cost, quality and speed across every AI app: dlt loads, dbt models, Airflow schedules."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Kevin Street", email = "info@kevindstreet.com" }]
 dependencies = [
-  "kds-args>=0.7.0,<0.8",
-  "kds-settings>=0.7.0,<0.8",
-  "kds-logs>=0.7.0,<0.8",
-  "kds-pipelines>=0.7.0,<0.8",
+  "kds-args>=0.8.0,<0.9",
+  "kds-settings>=0.8.0,<0.9",
+  "kds-logs>=0.8.0,<0.9",
+  "kds-pipelines>=0.8.0,<0.9",
   # dlt supports DuckDB below 2.0, so the lock holds DuckDB 1.5.
   "dlt[duckdb]==1.32.0",
   "dbt-core==1.12.6",
@@ -43,21 +43,29 @@ dev = [
   "ruff==0.17.3",
   "types-PyYAML>=6.0",
   "types-requests>=2.32",
-  "kds-standards>=0.7.0,<0.8",
+  "kds-standards>=0.8.0,<0.9",
 ]
 # The scheduler, for the DAG tests and for running a DAG end to end with `airflow dags test`.
 airflow = ["apache-airflow==3.4.0"]
 # The production warehouse: dbt's Databricks adapter and dlt's Databricks destination.
 databricks = ["dbt-databricks==1.13.0", "dlt[databricks]==1.32.0"]
+# The other production warehouse: dbt's Snowflake adapter and dlt's Snowflake destination.
+# Snowflake's connector is held at 4.8.1, the last release before its 5.0 rewrite on a Rust core,
+# which dlt's loads have not run on yet.
+snowflake = [
+  "dbt-snowflake==1.12.5",
+  "dlt[snowflake]==1.32.0",
+  "snowflake-connector-python==4.8.1",
+]
 
 # Our own packages come from the utils repository at one reviewed commit; none
 # of them is on PyPI, so a same-named public package can never be installed.
 [tool.uv.sources]
-kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
-kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
-kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
-kds-pipelines = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "pipelines", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
-kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "df52461aacee4b9fb1dee275b209eb73713905de" }
+kds-args = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "args", rev = "c6acc75155fb1a7350c6e8ccb09a57ce01bba40c" }
+kds-settings = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "settings", rev = "c6acc75155fb1a7350c6e8ccb09a57ce01bba40c" }
+kds-logs = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "logs", rev = "c6acc75155fb1a7350c6e8ccb09a57ce01bba40c" }
+kds-pipelines = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "pipelines", rev = "c6acc75155fb1a7350c6e8ccb09a57ce01bba40c" }
+kds-standards = { git = "https://github.com/iamkevinstreet/utils", subdirectory = "standards", rev = "c6acc75155fb1a7350c6e8ccb09a57ce01bba40c" }
 
 [build-system]
 requires = ["setuptools>=69", "wheel"]

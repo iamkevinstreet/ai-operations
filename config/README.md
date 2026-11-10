@@ -8,24 +8,27 @@ names each one), and the settings refuse a secret written in `config.toml`.
 
 Highest first: an environment variable, then `config/.env`, then `config.toml`, then the default in
 code: [`pipelines/config.py`](../pipelines/config.py) for this project's own settings, and the
-utils package `kds.pipelines` for the warehouse, `[dbt]`, `[databricks]` and `[files]` ones every
-project shares. Each key's environment name is its section and key
+utils package `kds.pipelines` for the warehouse, `[dbt]`, `[databricks]`, `[snowflake]` and `[files]`
+ones every project shares. Each key's environment name is its section and key
 joined by an underscore, in capitals: `[warehouse] path` is `WAREHOUSE_PATH`. A nested table is one
 setting: `[ai_ops.apps]` is `AI_OPS_APPS`, a JSON object in the environment. A test
 (`tests/test_config.py`) keeps `config.toml` equal to the defaults in code.
 
 dbt reads the same warehouse: `python -m pipelines dbt ...` sets `WAREHOUSE_PATH` and the Databricks
-variables from these settings before it starts dbt, and `dbt/profiles.yml` reads them.
+and Snowflake variables from these settings before it starts dbt, and `dbt/profiles.yml` reads them.
+On Snowflake that includes a token made for this run: a GitHub job signs in as itself, with the
+OIDC token GitHub gives a job allowed to ask for one (`permissions: id-token: write`), so no
+password or key is stored for it.
 
 ## Every setting
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `[warehouse] destination` | `duckdb` | Where dlt loads: `duckdb`, or `databricks` with the three Databricks secrets |
+| `[warehouse] destination` | `duckdb` | Where dlt loads: `duckdb`; `databricks`, with the three Databricks secrets; or `snowflake`, with `SNOWFLAKE_ACCOUNT` |
 | `[warehouse] path` | `data/generated/warehouse.duckdb` | The DuckDB file dlt loads and dbt builds in |
 | `[warehouse] state` | `data/generated/dlt` | dlt's pipeline state |
 | `[dbt] project` | `dbt` | The dbt project, which also holds `profiles.yml` |
-| `[dbt] target` | `dev` | `dev` builds in DuckDB, `prod` in Databricks |
+| `[dbt] target` | `dev` | `dev` builds in DuckDB, `prod` in Databricks, `snowflake` in Snowflake |
 | `[dbt] threads` | `4` | Models dbt builds at once |
 | `[github] api`, `raw`, `owner` | GitHub's | Where the apps' repositories are listed and read |
 | `[github] timeout_s` | `30.0` | How long one request may take |
@@ -35,6 +38,7 @@ variables from these settings before it starts dbt, and `dbt/profiles.yml` reads
 | `[ai_ops] prices_commits` | utils v0.6.1 | Every utils commit that holds a version of the price list |
 | `[ai_ops.apps]` | each app's main after the Nov 8 merges | Each app's repository and the full commit SHA its results are read at |
 | `[databricks] catalog` | `kds` | The Unity Catalog catalog every schema lives in |
+| `[snowflake] database` | `KDS` | The Snowflake database every schema lives in |
 | `[files] encoding` | `utf-8` | Every file read or written |
 | `[log] dir`, `level` | `logs`, `INFO` | Where `kds.logs` writes one JSON line per event, and from what level |
 
@@ -44,4 +48,6 @@ variables from these settings before it starts dbt, and `dbt/profiles.yml` reads
 | --- | --- |
 | `GITHUB_TOKEN` | Optional: a higher rate limit on GitHub's API. Workflows use their own token |
 | `DATABRICKS_HOST`, `DATABRICKS_HTTP_PATH`, `DATABRICKS_TOKEN` | Loading into Databricks, and the dbt `prod` target |
+| `SNOWFLAKE_ACCOUNT` | Loading into Snowflake, and the dbt `snowflake` target. It names the account, so it is kept secret |
+| `SNOWFLAKE_TOKEN` | A run against Snowflake outside GitHub only; a GitHub job signs in with its own OIDC token |
 | `POSTGRES_PASSWORD` | `make up`: Airflow's local metadata database |

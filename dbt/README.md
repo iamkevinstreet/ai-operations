@@ -1,8 +1,8 @@
 # dbt
 
-One dbt project, built in DuckDB (`dev`, CI) or Databricks (`prod`). Run it through
-`python -m pipelines dbt <command>`, which points `profiles.yml` at the warehouse the loaders used;
-`make build` and `make docs` do.
+One dbt project, built in DuckDB (`dev`, CI), Databricks (`prod`) or Snowflake (`snowflake`). Run
+it through `python -m pipelines dbt <command>`, which points `profiles.yml` at the warehouse the
+loaders used; `make build` and `make docs` do.
 
 | Folder | Layer | Built as |
 | --- | --- | --- |

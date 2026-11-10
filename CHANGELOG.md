@@ -2,6 +2,27 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
+## v0.4.0 (Nov 10, 2026)
+
+Snowflake, as a second production warehouse beside Databricks. Not yet run there: it waits on
+data-platform-aws-snowflake being applied.
+
+### Added
+
+- **The load and the build on Snowflake.** Once the repository's `SNOWFLAKE_DATABASE` variable is
+  set, the `daily` workflow loads every app's results into Snowflake and then builds and tests every
+  model there. Each job signs in as a service user of its own, with the OIDC token GitHub gives the
+  job in its environment, `snowflake-load` or `snowflake-build`, so no password or key exists for
+  either; the account is a secret, masked in the logs in either case.
+- A `snowflake` dbt target, a Snowflake form of the sorted list macro, a `snowflake` dependency
+  group (`dbt-snowflake` 1.12.5 and `dlt[snowflake]`, with Snowflake's connector held at 4.8.1, the
+  last release before its rewrite), and `[snowflake] database` in the settings.
+
+### Changed
+
+- The utils packages move to v0.8.0 (`c6acc75`), which adds the Snowflake destination. The price
+  list is still read at `9715718`.
+
 ## v0.3.0 (Nov 9, 2026)
 
 The settings, loads, dbt runs and command that every project's data layers need are now the utils

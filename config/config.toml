@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-09
+# Last modified on:  2026-11-10
 #
 # Every setting the loaders, the build and the DAGs read, at its
 # default. No secrets: those go in config/.env.
@@ -17,13 +17,13 @@
 # own in pipelines/config.py, the shared ones in kds.pipelines.
 
 [warehouse]
-destination = "duckdb"                    # duckdb (one file, here and in CI) | databricks
+destination = "duckdb"                    # duckdb (here and in CI) | databricks | snowflake
 path = "data/generated/warehouse.duckdb"  # the DuckDB file dlt loads and dbt builds in
 state = "data/generated/dlt"              # dlt's pipeline state: what each load did
 
 [dbt]
 project = "dbt"                           # the dbt project, whose profiles.yml it also holds
-target = "dev"                            # dev: DuckDB | prod: Databricks
+target = "dev"                            # dev: DuckDB | prod: Databricks | snowflake: Snowflake
 threads = 4                               # models dbt builds at once
 
 [github]
@@ -51,6 +51,9 @@ eeoc-charge-intake = "bae5b7c9f588a334fad3280e171a8052b2220c03"
 
 [databricks]
 catalog = "kds"                           # the Unity Catalog catalog every schema lives in
+
+[snowflake]
+database = "KDS"                          # the Snowflake database every schema lives in
 
 [files]
 encoding = "utf-8"                        # every file read or written

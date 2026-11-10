@@ -7,8 +7,10 @@
 What every AI app costs, how often it is right, and where its time goes, from data anyone can
 check. dlt loads what each app commits, dbt models it into marts with enforced contracts, and
 Airflow 3 schedules the load and the build. The same models build in DuckDB on a laptop and in CI,
-and in Databricks in production, on [data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks),
-which provisions where it runs. For businesses that run AI in production.
+and in Databricks or Snowflake in production, on
+[data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks) or
+[data-platform-aws-snowflake](https://github.com/iamkevinstreet/data-platform-aws-snowflake), which
+provision where each runs. For businesses that run AI in production.
 
 The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 [intake conflicts agent](https://github.com/iamkevinstreet/intake-conflicts-agent) and
@@ -23,7 +25,7 @@ it is the cross-project one, and it measures the AI rather than holding any.
 | --- | --- |
 | Sources | Each app's committed run files and traces, and the workbench's price list, at pinned commits |
 | Ingestion | dlt, merging on natural keys, under a Pydantic contract per raw table |
-| Storage | `raw_ai_ops` in DuckDB or Databricks; a dated copy of the warehouse in the S3 lake |
+| Storage | `raw_ai_ops` in DuckDB, Databricks or Snowflake; a dated copy of the warehouse in the S3 lake |
 | Modeling | Staging and intermediate views, then the `ai_ops` marts, with prices kept as type 2 history |
 | Serving | The marts, and the dbt docs site with its lineage graph |
 | Intelligence | None: it measures the apps' models |
@@ -37,7 +39,7 @@ it is the cross-project one, and it measures the AI rather than holding any.
 | Works on Databricks | The same load and build on the Databricks Free Edition's serverless 2X-Small SQL warehouse, from the daily workflow: all 128 models, seeds and tests pass, the reconciliation and the price check among them. On Nov 8 the load took 40 s with the warehouse warm (1 min 44 s from cold) and the build 68 s |
 | Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below), on DuckDB and on Databricks alike |
 | Works on AWS | The daily run on main copies the warehouse and its docs to the lake bucket, by date, through an IAM role it assumes with GitHub's OIDC token; first on Nov 9 |
-| Written, not yet run | The Compose file's Airflow image, which needs Docker |
+| Written, not yet run | The Compose file's Airflow image, which needs Docker; and the same load and build on Snowflake, each job signed in as a service user of its own with GitHub's OIDC token, which wait on data-platform-aws-snowflake being applied |
 | Next | A semantic layer that defines the marts' measures once (the share judged right, the judge's agreement, cost per run); telling the LLM judge's calls apart from the answers' before cost per answer counts Grounded's judged runs; the pins moved to the apps' current mains |
 
 ## Quick start
@@ -68,7 +70,7 @@ flowchart LR
     subgraph load [dlt]
         L1[load ai-ops]
     end
-    subgraph warehouse [DuckDB in dev and CI, Databricks in prod]
+    subgraph warehouse [DuckDB in dev and CI, Databricks or Snowflake in prod]
         R[(raw_ai_ops)]
         S[staging views]
         N[intermediate views]
@@ -156,14 +158,16 @@ merges, which hold the same runs.
 
 ## Design
 
-- **DuckDB in dev and CI, Databricks in production.** Every pull request builds and tests every
-  model on real data in a minute, for nothing. The SQL keeps to what both run (window functions,
-  `percentile_disc`, dbt's cross-database macros), and contract types are names both accept.
-  Databricks is the production target because the apps are AI products and one platform covers
-  Spark, streaming, Delta tables readable as Iceberg, Unity Catalog and vector search.
+- **DuckDB in dev and CI, Databricks or Snowflake in production.** Every pull request builds and
+  tests every model on real data in a minute, for nothing. The SQL keeps to what all three run
+  (window functions, `percentile_disc`, dbt's cross-database macros), with the one sorted list
+  written for each, and contract types are names all three accept. Databricks is a production
+  target because the apps are AI products and one platform covers Spark, streaming, Delta tables
+  readable as Iceberg, Unity Catalog and vector search; Snowflake is the other because many
+  businesses already keep their warehouse there.
 - **dlt for loading.** Each source is a short Python file a reviewer can read, with schema inference
-  held in check by the Pydantic contract, merge loads on natural keys, and the same code for DuckDB
-  and Databricks. The loading itself, dbt's runs and the command are the utils package
+  held in check by the Pydantic contract, merge loads on natural keys, and the same code for DuckDB,
+  Databricks and Snowflake. The loading itself, dbt's runs and the command are the utils package
   `kds.pipelines`, which every project shares, so this repository holds only its own source.
 - **Airflow only schedules.** Every task runs `uv run --no-sync python -m pipelines ...` in the
   locked environment, so a DAG holds no logic of its own, and moving to a hosted Airflow (Astro,
@@ -175,7 +179,9 @@ merges, which hold the same runs.
   repository's main branch, by name and id, through GitHub's OIDC token, for an hour at most, and can
   list, read and add objects in one bucket, never delete them. The role and the bucket are
   provisioned in data-platform-aws-databricks, apart from the project, so the next project deploys
-  onto the same platform without copying it.
+  onto the same platform without copying it. Snowflake likewise: the load and the build each sign in
+  as a service user of their own, which trusts that one job of this repository, in an environment
+  only main may use, through the same OIDC token; no Snowflake password or key exists.
 - **No MinIO.** MinIO stopped publishing its community images in late 2025, so files to load stay in
   a folder locally; the loaders read S3 in CI and production.
 
@@ -183,7 +189,8 @@ merges, which hold the same runs.
 
 Every setting is in [`config/config.toml`](config/config.toml), at its default, and a test keeps it
 equal to the defaults in code: this project's own in [`pipelines/config.py`](pipelines/config.py),
-and the warehouse, dbt and Databricks ones in `kds.pipelines`, which every project shares. Secrets
+and the warehouse, dbt, Databricks and Snowflake ones in `kds.pipelines`, which every project
+shares. Secrets
 go in `config/.env`; [`config/.env.example`](config/.env.example) names each. A load to DuckDB needs
 none. See [`config/README.md`](config/README.md).
 
@@ -214,7 +221,9 @@ them, validates the Compose file, and scans the whole history for secrets.
 | `compose.yaml`, `Dockerfile` | Airflow and its Postgres on this machine |
 
 Where it runs, the lake bucket, the role and the Unity Catalog setup, is
-[data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks).
+[data-platform-aws-databricks](https://github.com/iamkevinstreet/data-platform-aws-databricks); on
+Snowflake, the database, warehouses, roles and service users are
+[data-platform-aws-snowflake](https://github.com/iamkevinstreet/data-platform-aws-snowflake).
 
 ## Changelog and license
 
