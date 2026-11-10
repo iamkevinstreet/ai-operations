@@ -160,8 +160,8 @@ merges, which hold the same runs.
 
 - **DuckDB in dev and CI, Databricks or Snowflake in production.** Every pull request builds and
   tests every model on real data in a minute, for nothing. The SQL keeps to what all three run
-  (window functions, `percentile_disc`, dbt's cross-database macros), with the one sorted list
-  written for each, and contract types are names all three accept. Databricks is a production
+  (window functions, each written out in full, `percentile_disc`, dbt's cross-database macros),
+  with the one sorted list written for each, and contract types are names all three accept. Databricks is a production
   target because the apps are AI products and one platform covers Spark, streaming, Delta tables
   readable as Iceberg, Unity Catalog and vector search; Snowflake is the other because many
   businesses already keep their warehouse there.

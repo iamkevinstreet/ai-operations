@@ -1,6 +1,7 @@
 -- Grain: one row per live run, beside the run before it of the same
 -- name (live-hybrid after live-hybrid): how its judged metric, cost per
--- case and median time moved.
+-- case and median time moved. Each window is written out in full, as
+-- Snowflake has no WINDOW clause to name one.
 with runs as (
     select
         r.app,
@@ -21,12 +22,14 @@ with runs as (
 ordered as (
     select
         *,
-        lag(run_id) over w as previous_run_id,
-        lag(primary_metric_value) over w as previous_metric_value,
-        lag(cost_per_case_usd) over w as previous_cost_per_case_usd,
-        lag(latency_p50_ms) over w as previous_latency_p50_ms
+        lag(run_id) over (partition by app, run_name order by run_at) as previous_run_id,
+        lag(primary_metric_value) over (partition by app, run_name order by run_at)
+            as previous_metric_value,
+        lag(cost_per_case_usd) over (partition by app, run_name order by run_at)
+            as previous_cost_per_case_usd,
+        lag(latency_p50_ms) over (partition by app, run_name order by run_at)
+            as previous_latency_p50_ms
     from runs
-    window w as (partition by app, run_name order by run_at)
 )
 
 select

@@ -2,6 +2,15 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
+## v0.4.1 (Nov 10, 2026)
+
+### Fixed
+
+- **`rpt_run_changes` on Snowflake.** Its four `lag()` calls shared a named window
+  (`window w as (...)`), which DuckDB and Databricks accept and Snowflake does not, so the first
+  Snowflake build stopped at its unit test: 124 of 128 passed, and the model and its two tests were
+  skipped. Each window is now written out in full, which all three run.
+
 ## v0.4.0 (Nov 10, 2026)
 
 Snowflake, as a second production warehouse beside Databricks. Not yet run there: it waits on
