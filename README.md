@@ -16,6 +16,8 @@ The apps are [Grounded Q&A](https://github.com/iamkevinstreet/grounded-qa), the
 [intake conflicts agent](https://github.com/iamkevinstreet/intake-conflicts-agent) and
 [EEOC charge intake](https://github.com/iamkevinstreet/eeoc-charge-intake).
 
+Case study: <https://kevindstreet.com/projects/ai-operations-warehouse/>
+
 ## In the blueprint
 
 Every project follows the same seven layers. This one reads the other projects' published data, so
