@@ -39,9 +39,10 @@ it is the cross-project one, and it measures the AI rather than holding any.
 | --- | --- |
 | Works today | The AI operations load and mart, end to end on DuckDB: dlt reads every app's committed run files and traces at pinned commits, and dbt builds 15 views, 15 tables, 4 unit tests and 92 data tests over them. The two DAGs run through Airflow 3.4 itself with `airflow dags test`. 27 offline tests, strict types and the code standard |
 | Works on Databricks | The same load and build on the Databricks Free Edition's serverless 2X-Small SQL warehouse, from the daily workflow: all 128 models, seeds and tests pass, the reconciliation and the price check among them. On Nov 8 the load took 40 s with the warehouse warm (1 min 44 s from cold) and the build 68 s |
+| Works on Snowflake | The same load and build on Snowflake's X-Small warehouses, from the daily workflow, each job signed in as a service user of its own with GitHub's OIDC token: all 128 models, seeds and tests pass, the reconciliation and the price check among them. On Nov 10 the load took 34 s and the build 32 s |
 | Measured | On the apps' Nov 7 commits: 194 of 194 figures the apps published rebuilt from case rows, within rounding, and 319 of 319 model calls costed exactly at the workbench's list prices (below), on DuckDB and on Databricks alike |
 | Works on AWS | The daily run on main copies the warehouse and its docs to the lake bucket, by date, through an IAM role it assumes with GitHub's OIDC token; first on Nov 9 |
-| Written, not yet run | The Compose file's Airflow image, which needs Docker; and the same load and build on Snowflake, each job signed in as a service user of its own with GitHub's OIDC token, which wait on data-platform-aws-snowflake being applied |
+| Written, not yet run | The Compose file's Airflow image, which needs Docker |
 | Next | A semantic layer that defines the marts' measures once (the share judged right, the judge's agreement, cost per run); telling the LLM judge's calls apart from the answers' before cost per answer counts Grounded's judged runs; the pins moved to the apps' current mains |
 
 ## Quick start
