@@ -2,6 +2,20 @@
 
 Every release, newest first. Versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Changed
+
+- **Snowflake's connector, 4.8.1 to 5.2.0,** in the `snowflake` dependency group. The hold on it
+  is lifted: version 5 is Snowflake's rewrite of the connector on a Rust core, dbt's Snowflake
+  adapter has allowed it since 1.12.5, the version pinned here, and dlt sets no upper bound. The
+  lockfile loses the twelve packages only the old connector needed, boto3, botocore and keyring
+  among them. Checked without an account: on 5.2.0 both tools import, each signs in as before, as
+  a workload identity with the job's OIDC token, to a local stand-in for Snowflake, and the offline
+  tests pass. dbt's adapter passes three options the new connector does not know
+  (`reuse_connections`, `insecure_mode` and `ocsp_root_certs_dict_lock_timeout`); the connector
+  warns of each and sends it on as a session parameter. Not yet run on Snowflake on 5.2.0.
+
 ## v0.4.1 (Nov 10, 2026)
 
 ### Fixed
