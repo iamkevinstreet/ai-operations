@@ -11,10 +11,18 @@ Every release, newest first. Versions follow [Semantic Versioning](https://semve
   adapter has allowed it since 1.12.5, the version pinned here, and dlt sets no upper bound. The
   lockfile loses the twelve packages only the old connector needed, boto3, botocore and keyring
   among them. Checked without an account: on 5.2.0 both tools import, each signs in as before, as
-  a workload identity with the job's OIDC token, to a local stand-in for Snowflake, and the offline
-  tests pass. dbt's adapter passes three options the new connector does not know
+  a workload identity with the job's OIDC token, to a local stand-in for Snowflake, and the
+  offline tests pass. dbt's adapter passes three options the new connector does not know
   (`reuse_connections`, `insecure_mode` and `ocsp_root_certs_dict_lock_timeout`); the connector
-  warns of each and sends it on as a session parameter. Not yet run on Snowflake on 5.2.0.
+  warns of each and sends it on as a session parameter. First run on Snowflake on 5.2.0: the
+  scheduled `daily` run of Nov 14 loaded and built there, and all 128 models, seeds and tests
+  passed, in the time the runs of the two days before took on 4.8.1: 40 seconds for the load job
+  and 57 for the build, against 43 and 54 on Nov 13 and 43 and 46 on Nov 12. The new connector
+  says more at warning level than the old one. In the load job's log it says that it could not
+  read a cloud instance's metadata on the runner, and adds a line about proxy settings on each
+  connection; in both jobs it says that the default of
+  `enable_server_session_keep_alive_auto_detection` will change in a later version. None of it
+  changes a result.
 
 ## v0.4.1 (Nov 10, 2026)
 
