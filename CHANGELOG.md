@@ -43,7 +43,7 @@ data-platform-aws-snowflake being applied.
 
 ### Changed
 
-- The utils packages move to v0.8.0 (`c6acc75`), which adds the Snowflake destination. The price
+- The utils packages move to v0.8.0 (`70d6dd8`), which adds the Snowflake destination. The price
   list is still read at `9715718`.
 
 ## v0.3.0 (Nov 9, 2026)
