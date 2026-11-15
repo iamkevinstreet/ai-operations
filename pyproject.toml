@@ -40,7 +40,7 @@ dev = [
   "mypy>=1.13",
   "pip-audit>=2.7",
   "pytest>=8.3",
-  "ruff==0.17.3",
+  "ruff==0.17.5",
   "types-PyYAML>=6.0",
   "types-requests>=2.32",
   "kds-standards>=0.8.0,<0.9",
