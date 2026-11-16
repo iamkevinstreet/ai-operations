@@ -5,7 +5,7 @@
 ########################################################################
 # Author:            Kevin Street
 # Created on:        2026-11-08
-# Last modified on:  2026-11-15
+# Last modified on:  2026-11-16
 #
 # Packages the loaders and the build command, and sets ruff, mypy and
 # pytest to the code standard. Airflow and the Databricks and Snowflake
@@ -40,7 +40,7 @@ dev = [
   "mypy>=1.13",
   "pip-audit>=2.7",
   "pytest>=8.3",
-  "ruff==0.17.3",
+  "ruff==0.17.5",
   "types-PyYAML>=6.0",
   "types-requests>=2.32",
   "kds-standards>=0.8.0,<0.9",
